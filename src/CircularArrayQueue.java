@@ -26,8 +26,8 @@ import java.util.Queue;
  * @param <T>
  *            Type of object to be stored in the CircularArrayQueue
  */
-public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable, Iterable<T>
-{
+public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable, Iterable<T> {
+
 	/**
 	 *
 	 */
@@ -72,10 +72,8 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 *            The capacity with which to create the queue
 	 */
 	@SuppressWarnings("unchecked")
-	public CircularArrayQueue(int initialCapacity)
-	{
-		if (initialCapacity <= 0)
-		{
+	public CircularArrayQueue(int initialCapacity) {
+		if (initialCapacity < 0) {
 			throw new IllegalArgumentException();
 		}
 		elements = (T[]) new Object[initialCapacity];
@@ -83,48 +81,38 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	}
 
 	@SuppressWarnings("unchecked")
-	public CircularArrayQueue(Collection<? extends T> c, int initialCapacity)
-	{
-		if (c == null)
-		{
+	public CircularArrayQueue(Collection<? extends T> c, int initialCapacity) {
+		if (c == null) {
 			throw new NullPointerException();
 		}
-		if (initialCapacity < c.size())
-		{
+		if (initialCapacity < c.size()) {
 			throw new IllegalArgumentException();
 		}
-		if ((size = c.size()) != 0)
-		{
+		if ((size = c.size()) != 0) {
 			capacity = initialCapacity;
 			elements = (T[]) new Object[capacity];
 			System.arraycopy(c.toArray(), 0, elements, 0, size);
 			tail = size;
-		} else
-		{
+		} else {
 			capacity = initialCapacity;
 			elements = (T[]) new Object[capacity];
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public CircularArrayQueue(Collection<? extends T> c)
-	{
-		if (c == null)
-		{
+	public CircularArrayQueue(Collection<? extends T> c) {
+		if (c == null) {
 			throw new NullPointerException();
 		}
 		capacity = c.size() << 1;
-		if (capacity < 0)
-		{
+		if (capacity < 0) {
 			throw new IllegalStateException();
 		}
-		if ((size = c.size()) != 0)
-		{
+		if ((size = c.size()) != 0) {
 			elements = (T[]) new Object[capacity];
 			System.arraycopy(c.toArray(), 0, elements, 0, size);
 			tail = size;
-		} else
-		{
+		} else {
 			elements = (T[]) new Object[capacity];
 		}
 	}
@@ -134,8 +122,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * is not well known beforehand
 	 */
 	@SuppressWarnings("unchecked")
-	public CircularArrayQueue()
-	{
+	public CircularArrayQueue() {
 		elements = (T[]) new Object[DEFAULT_CAPACITY];
 		capacity = DEFAULT_CAPACITY;
 	}
@@ -145,8 +132,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 *
 	 * @return The current capacity of the queue
 	 */
-	public int capacity()
-	{
+	public int capacity() {
 		return capacity;
 	}
 
@@ -156,8 +142,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#size()
 	 */
 	@Override
-	public int size()
-	{
+	public int size() {
 		return size;
 	}
 
@@ -167,24 +152,17 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
-	public boolean contains(Object o)
-	{
+	public boolean contains(Object o) {
 		Iterator<T> it = iterator();
-		if (o == null)
-		{
-			while (it.hasNext())
-			{
-				if (it.next() == null)
-				{
+		if (o == null) {
+			while (it.hasNext()) {
+				if (it.next() == null) {
 					return true;
 				}
 			}
-		} else
-		{
-			while (it.hasNext())
-			{
-				if (o.equals(it.next()))
-				{
+		} else {
+			while (it.hasNext()) {
+				if (o.equals(it.next())) {
 					return true;
 				}
 			}
@@ -198,8 +176,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
-	public boolean isEmpty()
-	{
+	public boolean isEmpty() {
 		return size == 0;
 	}
 
@@ -207,8 +184,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * Class used to implement the iterator for this CircularArrayQueue
 	 * collection
 	 */
-	private class It implements Iterator<T>
-	{
+	private class It implements Iterator<T> {
 		private int pointer = head;
 
 		private boolean calledNext = false;
@@ -216,53 +192,43 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		private int nextCount = 0;
 
 		@Override
-		public boolean hasNext()
-		{
+		public boolean hasNext() {
 			return (size == capacity) ? nextCount == 0 : pointer != tail;
 		}
 
 		@Override
-		public T next()
-		{
-			if (!hasNext())
-			{
+		public T next() {
+			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
 			calledNext = true;
 			T o = elements[pointer++];
 			nextCount++;
-			if (pointer == capacity)
-			{
+			if (pointer == capacity) {
 				pointer = 0;
 			}
 			return o;
 		}
 
 		@Override
-		public void remove()
-		{
-			if (!calledNext)
-			{
+		public void remove() {
+			if (!calledNext) {
 				throw new IllegalStateException();
 			}
 			int prev = pointer - 1;
-			if (head <= tail)
-			{
+			if (head <= tail) {
 				System.arraycopy(elements, pointer, elements, prev, tail - prev);
-			} else
-			{
+			} else {
 				System.arraycopy(elements, pointer, elements, prev, capacity - prev);
 				elements[capacity - 1] = elements[0];
 				System.arraycopy(elements, 1, elements, 0, tail);
 			}
 			tail--;
 			pointer--;
-			if (tail < 0)
-			{
+			if (tail < 0) {
 				tail = capacity - 1;
 			}
-			if (pointer < 0)
-			{
+			if (pointer < 0) {
 				pointer = capacity - 1;
 			}
 			size--;
@@ -277,8 +243,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
-	public Iterator<T> iterator()
-	{
+	public Iterator<T> iterator() {
 		return new It();
 	}
 
@@ -288,20 +253,14 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
-	public Object[] toArray()
-	{
+	public Object[] toArray() {
 		Object[] a = new Object[size];
-
-		if (size == 0)
-		{
+		if (size == 0) {
 			return a;
 		}
-
-		if (head < tail)
-		{
+		if (head < tail) {
 			System.arraycopy(elements, head, a, 0, size);
-		} else
-		{
+		} else {
 			System.arraycopy(elements, head, a, 0, capacity - head);
 			System.arraycopy(elements, 0, a, capacity - head, tail);
 		}
@@ -315,35 +274,20 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public <E> E[] toArray(E[] a)
-	{
-		if (a.length < size)
-		{
+	public <E> E[] toArray(E[] a) {
+		if (a.length < size) {
 			a = (E[]) new Object[size];
 		}
-		if (size == 0)
-		{
+		if (size == 0) {
 			return a;
 		}
-
-		if (head < tail)
-		{
-			try
-			{
-				System.arraycopy(elements, head, a, 0, size);
-			} catch (ArrayIndexOutOfBoundsException e)
-			{
-				System.out.println("Caught");
-				// Caught
-			}
-
-		} else
-		{
+		if (head < tail) {
+			System.arraycopy(elements, head, a, 0, size);
+		} else {
 			System.arraycopy(elements, head, a, 0, capacity - head);
 			System.arraycopy(elements, 0, a, capacity - head, tail);
 		}
-		if (a.length > size)
-		{
+		if (a.length > size) {
 			a[size] = null;
 		}
 		return a;
@@ -355,31 +299,21 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
-	public boolean remove(Object o)
-	{
-		if (size == 0)
-		{
+	public boolean remove(Object o) {
+		if (size == 0) {
 			return false;
 		}
-
 		Iterator<T> it = iterator();
-
-		if (o == null)
-		{
-			while (it.hasNext())
-			{
-				if (it.next() == null)
-				{
+		if (o == null) {
+			while (it.hasNext()) {
+				if (it.next() == null) {
 					it.remove();
 					return true;
 				}
 			}
-		} else
-		{
-			while (it.hasNext())
-			{
-				if (o.equals(it.next()))
-				{
+		} else {
+			while (it.hasNext()) {
+				if (o.equals(it.next())) {
 					it.remove();
 					return true;
 				}
@@ -393,20 +327,15 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 *
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean containsAll(Collection<?> c)
-	{
-		if (c == null)
-		{
+	public boolean containsAll(Collection<?> c) {
+		if (c == null) {
 			throw new NullPointerException();
 		}
 
-		Iterator i = c.iterator();
-		while (i.hasNext())
-		{
-			if (!contains(i.next()))
-			{
+		Iterator<?> i = c.iterator();
+		while (i.hasNext()) {
+			if (!contains(i.next())) {
 				return false;
 			}
 		}
@@ -420,16 +349,12 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean addAll(Collection c)
-	{
-		if (c == null)
-		{
+	public boolean addAll(Collection c) {
+		if (c == null) {
 			throw new NullPointerException();
 		}
-
-		if (capacity < size + c.size())
-		{
-			fastResize(c.size() << 1);
+		if (capacity < size + c.size()) {
+			fastResize(ensureCapacity(c.size() << 1));
 		}
 		System.arraycopy(c.toArray(), 0, elements, tail, c.size());
 		tail = size + c.size();
@@ -448,18 +373,14 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	private void fastResize(int newCap)
-	{
-		if (newCap < 0)
-		{
+	private void fastResize(int newCap) {
+		if (newCap < 0) {
 			throw new IllegalStateException();
 		}
 		T[] newElements = (T[]) new Object[newCap];
-		if (head < tail)
-		{
+		if (head < tail) {
 			System.arraycopy(elements, head, newElements, 0, size);
-		} else
-		{
+		} else {
 			System.arraycopy(elements, head, newElements, 0, capacity - head);
 			System.arraycopy(elements, 0, newElements, capacity - head, tail);
 		}
@@ -475,16 +396,12 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@Override
-	public boolean removeAll(Collection<?> c)
-	{
-		if (c == null)
-		{
-			throw new NullPointerException("Given collection is null");
+	public boolean removeAll(Collection<?> c) {
+		if (c == null) {
+			throw new NullPointerException();
 		}
-
 		Iterator<?> i = c.iterator();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			remove(i.next());
 		}
 		return true;
@@ -496,9 +413,22 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
-	public boolean retainAll(Collection<?> c)
-	{
-		throw new UnsupportedOperationException();
+	public boolean retainAll(Collection<?> c) {
+		if (c == null) {
+			throw new NullPointerException();
+		}
+		Iterator<T> it = iterator();
+		int modCount = 0;
+		while (it.hasNext()) {
+			T next = it.next();
+			if (!c.contains(next)) {
+				while (remove(next)) {
+					modCount++;
+				}
+				it = iterator();
+			}
+		}
+		return modCount == 0 ? false : true;
 	}
 
 	/*
@@ -507,8 +437,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
-	public void clear()
-	{
+	public void clear() {
 		// We don't even need to null any elements!
 		tail = 0;
 		head = 0;
@@ -521,19 +450,20 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
-	public boolean add(T e)
-	{
-		if (tail == capacity)
-		{
+	public boolean add(T e) {
+		if (tail == capacity) {
 			tail = 0;
 		}
-		if (tail == head && size != 0)
-		{
-			fastResize(capacity << 1);
+		if ((tail == head && size != 0) || capacity == 0) {
+			fastResize(ensureCapacity(capacity << 1));
 		}
 		elements[tail++] = e;
 		size++;
 		return true;
+	}
+
+	private int ensureCapacity(int newCapacity) {
+		return (newCapacity <= 0) ? 1 : newCapacity;
 	}
 
 	/*
@@ -542,8 +472,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
-	public boolean offer(T e)
-	{
+	public boolean offer(T e) {
 		return add(e);
 	}
 
@@ -553,15 +482,12 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
-	public T remove()
-	{
-		if (size == 0)
-		{
+	public T remove() {
+		if (size == 0) {
 			throw new NoSuchElementException();
 		}
 		T o = elements[head++];
-		if (head == capacity)
-		{
+		if (head == capacity) {
 			head = 0;
 		}
 		size--;
@@ -574,13 +500,10 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
-	public T poll()
-	{
-		if (isEmpty())
-		{
+	public T poll() {
+		if (isEmpty()) {
 			return null;
-		} else
-		{
+		} else {
 			return remove();
 		}
 	}
@@ -591,10 +514,8 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#element()
 	 */
 	@Override
-	public T element()
-	{
-		if (size == 0)
-		{
+	public T element() {
+		if (size == 0) {
 			throw new NoSuchElementException();
 		}
 		return elements[head];
@@ -606,13 +527,10 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
-	public T peek()
-	{
-		if (isEmpty())
-		{
+	public T peek() {
+		if (isEmpty()) {
 			return null;
-		} else
-		{
+		} else {
 			return elements[head];
 		}
 	}
@@ -623,8 +541,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
-	public int hashCode()
-	{
+	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + capacity;
@@ -642,39 +559,30 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 */
 	@SuppressWarnings("rawtypes")
 	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-		{
+	public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
 		}
-		if (obj == null)
-		{
+		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof CircularArrayQueue))
-		{
+		if (!(obj instanceof CircularArrayQueue)) {
 			return false;
 		}
 		CircularArrayQueue other = (CircularArrayQueue) obj;
-		if (capacity != other.capacity)
-		{
+		if (capacity != other.capacity) {
 			return false;
 		}
-		if (!Arrays.equals(toArray(), other.toArray()))
-		{
+		if (!Arrays.equals(toArray(), other.toArray())) {
 			return false;
 		}
-		if (head != other.head)
-		{
+		if (head != other.head) {
 			return false;
 		}
-		if (size != other.size)
-		{
+		if (size != other.size) {
 			return false;
 		}
-		if (tail != other.tail)
-		{
+		if (tail != other.tail) {
 			return false;
 		}
 		return true;
@@ -682,16 +590,13 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public CircularArrayQueue<T> clone()
-	{
+	public CircularArrayQueue<T> clone() {
 		CircularArrayQueue<T> c;
-		try
-		{
+		try {
 			c = (CircularArrayQueue<T>) super.clone();
 			c.elements = Arrays.copyOf(this.elements, capacity);
 			return c;
-		} catch (CloneNotSupportedException e)
-		{
+		} catch (CloneNotSupportedException e) {
 			throw new InternalError(e);
 		}
 

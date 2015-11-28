@@ -1,4 +1,6 @@
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Random;
@@ -15,36 +18,31 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CAQTest
-{
+public class CAQTest {
 	CircularArrayQueue<Integer> queue;
 	ArrayList<Integer> test;
 
 	@Before
-	public void setup()
-	{
+	public void setup() {
 		queue = new CircularArrayQueue<Integer>();
 		test = new ArrayList<Integer>();
 	}
 
 	@Test
-	public void ensureCapacity()
-	{
+	public void ensureCapacity() {
 		queue = new CircularArrayQueue<Integer>(40);
 		assertEquals(40, queue.capacity());
 	}
 
 	@Test
-	public void add()
-	{
+	public void add() {
 		queue.add(1);
 		assertEquals(1, queue.size());
 		assertTrue(queue.contains(1));
 	}
 
 	@Test
-	public void empty()
-	{
+	public void empty() {
 		assertTrue(queue.isEmpty());
 		queue.add(10);
 		assertEquals(1, queue.size());
@@ -52,8 +50,7 @@ public class CAQTest
 	}
 
 	@Test
-	public void testRemove()
-	{
+	public void testRemove() {
 		queue.add(10);
 		queue.add(20);
 		int elem = queue.remove();
@@ -62,25 +59,20 @@ public class CAQTest
 	}
 
 	@Test
-	public void testAddMultiple()
-	{
-		for (int i = 0; i < 100; i++)
-		{
+	public void testAddMultiple() {
+		for (int i = 0; i < 100; i++) {
 			queue.add(i);
 		}
 
 		assertEquals(100, queue.size());
-		for (int i = 0; i < test.size(); i++)
-		{
+		for (int i = 0; i < test.size(); i++) {
 			assertTrue(queue.contains(i));
 		}
 	}
 
 	@Test
-	public void testCapacity()
-	{
-		for (int i = 0; i < 10; i++)
-		{
+	public void testCapacity() {
+		for (int i = 0; i < 10; i++) {
 			queue.add(i);
 			assertEquals(10, queue.capacity());
 		}
@@ -90,10 +82,8 @@ public class CAQTest
 	}
 
 	@Test
-	public void yetAnotherIteratorTest()
-	{
-		for (int i = 0; i < 100000; i++)
-		{
+	public void yetAnotherIteratorTest() {
+		for (int i = 0; i < 100000; i++) {
 			queue.add(i);
 			test.add(i);
 		}
@@ -102,12 +92,10 @@ public class CAQTest
 		Iterator<Integer> it = queue.iterator();
 
 		Random rand = new Random();
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			assertEquals(i.next(), it.next());
 
-			if (rand.nextFloat() >= 0.5 && i.hasNext())
-			{
+			if (rand.nextFloat() >= 0.5 && i.hasNext()) {
 				i.remove();
 				it.remove();
 			}
@@ -120,24 +108,19 @@ public class CAQTest
 	}
 
 	@Test
-	public void testMultipleAddRemove()
-	{
+	public void testMultipleAddRemove() {
 		Random rand = new Random();
 		int size = 0;
-		for (int i = 0; i < 10000; i++)
-		{
+		for (int i = 0; i < 10000; i++) {
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.7f;
 			}
-			if (next >= 0.5)
-			{
+			if (next >= 0.5) {
 				queue.add(i);
 				test.add(i);
 				size++;
-			} else
-			{
+			} else {
 				queue.remove();
 				test.remove(0);
 				size--;
@@ -146,19 +129,16 @@ public class CAQTest
 
 		assertEquals(size, queue.size());
 		assertEquals(test.size(), queue.size());
-		for (Integer i : test)
-		{
+		for (Integer i : test) {
 			assertTrue(queue.contains(i));
 		}
 	}
 
 	@Test
-	public void testLoadsOfAdding()
-	{
+	public void testLoadsOfAdding() {
 		Random rand = new Random();
 		int size = 0;
-		for (int i = 0; i < 10000000; i++)
-		{
+		for (int i = 0; i < 10000000; i++) {
 			int next = rand.nextInt(1000);
 			queue.add(next);
 			test.add(next);
@@ -171,63 +151,51 @@ public class CAQTest
 	}
 
 	@Test
-	public void testTypeChecking()
-	{
+	public void testTypeChecking() {
 		queue.add(null);
 		assertTrue(queue.contains(null));
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testEmptyRemove()
-	{
+	public void testEmptyRemove() {
 		queue.remove();
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testElement()
-	{
+	public void testElement() {
 		queue.element();
 	}
 
 	@Test
-	public void testPeek()
-	{
+	public void testPeek() {
 		assertEquals(null, queue.peek());
 	}
 
 	@Test
-	public void algorithmicsTestSimple()
-	{
+	public void algorithmicsTestSimple() {
 		checkSize(0, queue);
 		queue.add(3);
 		checkSize(1, queue);
-		try
-		{
+		try {
 			assertEquals("Dequeue returns wrong element", 3, (int) queue.remove());
-		} catch (NoSuchElementException e)
-		{
+		} catch (NoSuchElementException e) {
 			throw e;
 		}
 		checkSize(0, queue);
 	}
 
-	private void checkSize(int length, Queue<?> queue)
-	{
+	private void checkSize(int length, Queue<?> queue) {
 		assertEquals("Queue has wrong number of elements", length, queue.size());
-		if (length == 0)
-		{
+		if (length == 0) {
 			assertTrue("Queue should be empty", queue.isEmpty());
-		} else
-		{
+		} else {
 			assertTrue("Queue should not be empty", !queue.isEmpty());
 		}
 	}
 
 	@Test
-	public void algorithmicsTestMultiInput()
-	{
-		for (int i = 0; i < 1000; ++i)
-		{
+	public void algorithmicsTestMultiInput() {
+		for (int i = 0; i < 1000; ++i) {
 			int r = (int) Math.round(Math.random());
 			checkSize(0, queue);
 			queue.add(r);
@@ -237,19 +205,68 @@ public class CAQTest
 	}
 
 	@Test
-	public void algorithmicsTestManyEnqueueDequeue()
-	{
+	public void testEmptyConstructor() {
+		queue = new CircularArrayQueue<>(0);
+		queue.add(1);
+		assertEquals(1, queue.size());
+	}
+
+	@Test
+	public void testRetainAll() {
+		ArrayList<Integer> toKeep = new ArrayList<>();
+		Random rand = new Random();
+		for (int i = 0; i < 1000; i++) {
+			queue.add(i);
+			toKeep.add(rand.nextInt(1000));
+		}
+		queue.retainAll(toKeep);
+		assertTrue(queue.containsAll(toKeep));
+		assertTrue(toKeep.containsAll(queue));
+
+		toKeep = new ArrayList<>();
+		queue = new CircularArrayQueue<>();
+		for (int i = 0; i < 1000; i++) {
+			queue.add(i);
+			toKeep.add(i);
+		}
+		queue.retainAll(toKeep);
+		assertEquals(toKeep.size(), queue.size());
+		assertTrue(toKeep.containsAll(queue));
+		assertTrue(queue.containsAll(toKeep));
+
+		toKeep = new ArrayList<>();
+		queue = new CircularArrayQueue<>();
+		for (int i = 0; i < 1000; i++) {
+			queue.add(i);
+			if (i >= 500) {
+				toKeep.add(i);
+			}
+		}
+
+		queue.retainAll(toKeep);
+		assertTrue(queue.containsAll(toKeep));
+		assertTrue(toKeep.containsAll(queue));
+
+		toKeep = new ArrayList<>();
+		ArrayList<Integer> toKeep2 = new ArrayList<>();
+		for (int i = 0; i < 1000; i++) {
+			toKeep.add(i);
+			if (i >= 500) {
+				toKeep2.add(i);
+			}
+		}
+		toKeep.retainAll(toKeep2);
+	}
+
+	@Test
+	public void algorithmicsTestManyEnqueueDequeue() {
 		int cnt = 0;
-		for (int i = 0; i < 100000; ++i)
-		{
-			if (Math.random() > 0.5)
-			{
+		for (int i = 0; i < 100000; ++i) {
+			if (Math.random() > 0.5) {
 				queue.add(i);
 				cnt++;
-			} else
-			{
-				if (!queue.isEmpty())
-				{
+			} else {
+				if (!queue.isEmpty()) {
 					queue.remove();
 					cnt--;
 				}
@@ -259,70 +276,57 @@ public class CAQTest
 	}
 
 	@Test
-	public void algorithmicsTestLargeQueue()
-	{
+	public void algorithmicsTestLargeQueue() {
 		int[] r = new int[1000];
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			r[i] = (int) Math.round(Math.random());
 			checkSize(i, queue);
 			queue.add(r[i]);
 		}
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			assertEquals("Dequeue returns wrong element", r[i], (int) queue.remove());
 			checkSize(r.length - i - 1, queue);
 		}
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			r[i] = (int) Math.round(Math.random());
 			checkSize(i, queue);
 			queue.add(r[i]);
 		}
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			assertEquals("Dequeue returns wrong element", r[i], (int) queue.remove());
 			checkSize(r.length - i - 1, queue);
 		}
 	}
 
 	@Test
-	public void algorithmicsTestThrows()
-	{
+	public void algorithmicsTestThrows() {
 		int[] r = new int[1000];
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			r[i] = (int) Math.round(Math.random());
 			checkSize(i, queue);
 			queue.add(r[i]);
 		}
-		for (int i = 0; i < r.length; ++i)
-		{
+		for (int i = 0; i < r.length; ++i) {
 			assertEquals("Dequeue returns wrong element", r[i], (int) queue.remove());
 			checkSize(r.length - i - 1, queue);
 		}
 		boolean throwsCorrectly = false;
-		try
-		{
+		try {
 			queue.remove();
-		} catch (NoSuchElementException e)
-		{
+		} catch (NoSuchElementException e) {
 			throwsCorrectly = true;
 		}
 		assertTrue("Throws when dequeuing empty queue", throwsCorrectly);
 	}
 
 	@Test
-	public void algorithmicsTestResize()
-	{
+	public void algorithmicsTestResize() {
 		assertTrue("Initial capacity too large", queue.capacity() - queue.size() <= 1024);
-		for (int i = 0; i < 1000; ++i)
-		{
+		for (int i = 0; i < 1000; ++i) {
 			queue.add(i);
 		}
 		int currentCapacity = queue.capacity() - queue.size();
-		while (currentCapacity > 0)
-		{
+		while (currentCapacity > 0) {
 			queue.add(9);
 			currentCapacity--;
 			assertEquals("Array size should not change", currentCapacity, queue.capacity() - queue.size());
@@ -331,8 +335,7 @@ public class CAQTest
 		queue.add(42);
 		assertTrue("Should have resized array", currentCapacity < queue.capacity() - queue.size());
 		currentCapacity = queue.capacity() - queue.size();
-		for (int i = 0; i < 100; ++i)
-		{
+		for (int i = 0; i < 100; ++i) {
 			queue.add(i);
 			currentCapacity--;
 			assertEquals("Resizing too often (inefficient)", currentCapacity, queue.capacity() - queue.size());
@@ -340,29 +343,24 @@ public class CAQTest
 	}
 
 	@Test
-	public void testIterator()
-	{
+	public void testIterator() {
 		CircularArrayQueue<String> queue = new CircularArrayQueue<>();
 		ArrayList<String> test = new ArrayList<>();
 
 		Random rand = new Random();
 
 		int size = 0;
-		for (int i = 0; i < 1000; i++)
-		{
+		for (int i = 0; i < 1000; i++) {
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.9f;
 			}
 
-			if (next >= 0.8f)
-			{
+			if (next >= 0.8f) {
 				String nextString = UUID.randomUUID().toString();
 				test.add(nextString);
 				queue.add(nextString);
-			} else
-			{
+			} else {
 				test.remove(0);
 				queue.remove();
 			}
@@ -372,8 +370,7 @@ public class CAQTest
 		Iterator<String> ti = test.iterator();
 
 		String elem = null;
-		while (ti.hasNext())
-		{
+		while (ti.hasNext()) {
 			elem = ti.next();
 			assertEquals(elem, qi.next());
 		}
@@ -382,8 +379,7 @@ public class CAQTest
 	}
 
 	@Test
-	public void checkToArray()
-	{
+	public void checkToArray() {
 		addRandomInts();
 
 		Object[] arr1 = test.toArray();
@@ -394,8 +390,7 @@ public class CAQTest
 		queue = new CircularArrayQueue<>();
 		test = new ArrayList<>();
 
-		for (int i = 0; i < 1000; i++)
-		{
+		for (int i = 0; i < 1000; i++) {
 			queue.add(i);
 			test.add(i);
 		}
@@ -407,10 +402,8 @@ public class CAQTest
 	}
 
 	@Test
-	public void testConstructor()
-	{
-		for (int i = 0; i < 1000; i++)
-		{
+	public void testConstructor() {
+		for (int i = 0; i < 1000; i++) {
 			test.add(i);
 		}
 
@@ -418,27 +411,22 @@ public class CAQTest
 		assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
 	}
 
-	private void addRandomInts()
-	{
+	private void addRandomInts() {
 		Random rand = new Random(System.currentTimeMillis());
 
 		int size = 0;
-		for (int i = 0; i < 1000; i++)
-		{
+		for (int i = 0; i < 1000; i++) {
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.9f;
 			}
 
-			if (next >= 0.8f)
-			{
+			if (next >= 0.8f) {
 				int nextInt = rand.nextInt(1000);
 				test.add(nextInt);
 				queue.add(nextInt);
 				size++;
-			} else
-			{
+			} else {
 				test.remove(0);
 				queue.remove();
 				size--;
@@ -447,8 +435,7 @@ public class CAQTest
 	}
 
 	@Test
-	public void checkToArrayParameterized()
-	{
+	public void checkToArrayParameterized() {
 		addRandomInts();
 
 		Object[] arr1 = test.toArray(new Object[10]);
@@ -459,8 +446,7 @@ public class CAQTest
 		queue = new CircularArrayQueue<>();
 		test = new ArrayList<>();
 
-		for (int i = 0; i < 1500; i++)
-		{
+		for (int i = 0; i < 1500; i++) {
 			queue.add(i);
 			test.add(i);
 		}
@@ -478,12 +464,10 @@ public class CAQTest
 	}
 
 	@Test
-	public void testAddAll()
-	{
+	public void testAddAll() {
 		ArrayList<Integer> toAdd = new ArrayList<>();
 
-		for (int i = 0; i < 100; i++)
-		{
+		for (int i = 0; i < 100; i++) {
 			toAdd.add(i);
 		}
 
@@ -496,13 +480,11 @@ public class CAQTest
 	}
 
 	@Test
-	public void testRemoveAll()
-	{
+	public void testRemoveAll() {
 		ArrayList<Integer> toRemove = new ArrayList<>();
 		Random rand = new Random();
 
-		for (int i = 0; i < 100; i++)
-		{
+		for (int i = 0; i < 100; i++) {
 			toRemove.add(rand.nextInt(100));
 			test.add(i);
 			queue.add(i);
@@ -517,27 +499,22 @@ public class CAQTest
 	}
 
 	@Test
-	public void testMultipleRemoveAndSize()
-	{
+	public void testMultipleRemoveAndSize() {
 		Queue<Integer> test = new LinkedList<>();
 		Random rand = new Random();
 
 		int size = 0;
-		for (int i = 0; i < 100000; i++)
-		{
+		for (int i = 0; i < 100000; i++) {
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.9f;
 			}
 
-			if (next >= 0.8f)
-			{
+			if (next >= 0.8f) {
 				int nextInt = rand.nextInt(1000000);
 				test.add(nextInt);
 				queue.add(nextInt);
-			} else
-			{
+			} else {
 				test.remove(0);
 				queue.remove();
 			}
@@ -547,30 +524,25 @@ public class CAQTest
 	}
 
 	@Test
-	public void testRemoveObjects()
-	{
+	public void testRemoveObjects() {
 		ArrayList<String> test = new ArrayList<String>(150);
 		Queue<String> queue = new CircularArrayQueue<String>(150);
 
 		Random rand = new Random();
 
 		int size = 0;
-		for (int i = 0; i < 75; i++)
-		{
+		for (int i = 0; i < 75; i++) {
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.9f;
 			}
 
-			if (next >= 0.2f)
-			{
+			if (next >= 0.2f) {
 				String ns = "" + rand.nextInt();
 				test.add(ns);
 				queue.add(ns);
 				size++;
-			} else
-			{
+			} else {
 				String toRemove = test.get(rand.nextInt(test.size()));
 				test.remove(toRemove);
 				queue.remove(toRemove);
@@ -582,97 +554,75 @@ public class CAQTest
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNullCollection()
-	{
+	public void testNullCollection() {
 		queue.removeAll(null);
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testRemoveAllNull()
-	{
+	public void testRemoveAllNull() {
 		queue.addAll(null);
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testContainsAllNull()
-	{
+	public void testContainsAllNull() {
 		queue.containsAll(null);
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void testNotSupported()
-	{
-		queue.retainAll(null);
-	}
-
 	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorArguments()
-	{
+	public void testConstructorArguments() {
 		queue = new CircularArrayQueue<>(-100);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testConstructorIllegal()
-	{
+	public void testConstructorIllegal() {
 		test = new ArrayList<>();
-		for (int i = 0; i < 100; i++)
-		{
+		for (int i = 0; i < 100; i++) {
 			test.add(i);
 		}
 		queue = new CircularArrayQueue<>(test, 99);
 	}
 
-	private void testElementsEqual()
-	{
+	private void testElementsEqual() {
 		assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
 		assertEquals(test.size(), queue.size());
 	}
 
 	@Test
-	public void testEmptyIterator()
-	{
+	public void testEmptyIterator() {
 		Iterator<Integer> it = queue.iterator();
 		assertFalse(it.hasNext());
 	}
 
 	@Test
-	public void testHasNext()
-	{
+	public void testHasNext() {
 		queue.add(1);
 		Iterator<Integer> it = queue.iterator();
-		for (int i = 0; i < 10; i++)
-		{
+		for (int i = 0; i < 10; i++) {
 			assertTrue(it.hasNext());
 		}
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testEmptyExceptionIterator()
-	{
+	public void testEmptyExceptionIterator() {
 		Iterator<Integer> it = queue.iterator();
 		it.next();
 	}
 
 	@Test
-	public void multipleIteratorOperations()
-	{
+	public void multipleIteratorOperations() {
 		long seed = System.currentTimeMillis();
 		Random rand = new Random(seed);
-		for (int i = 0; i < 1000000; i++)
-		{
+		for (int i = 0; i < 1000000; i++) {
 			float next = rand.nextFloat();
 
-			if (test.size() == 0)
-			{
+			if (test.size() == 0) {
 				next = 0.9f;
 			}
 
-			if (next >= 0.8f)
-			{
+			if (next >= 0.8f) {
 				queue.add(i);
 				test.add(i);
-			} else
-			{
+			} else {
 
 				test.remove(0);
 				queue.remove();
@@ -686,34 +636,29 @@ public class CAQTest
 		test = new ArrayList<>();
 
 		int size = 0;
-		for (int i = 0; i < 100000; i++)
-		{
+		for (int i = 0; i < 100000; i++) {
 			Iterator<Integer> it = test.iterator();
 			Iterator<Integer> iter = queue.iterator();
 
 			assertEquals(it.hasNext(), iter.hasNext());
 
-			if (size == 0)
-			{
+			if (size == 0) {
 				assertFalse(iter.hasNext());
 			}
 
 			float next = rand.nextFloat();
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.4f;
 			}
 
-			if (next >= 0.3f)
-			{
+			if (next >= 0.3f) {
 				queue.add(i);
 				test.add(i);
 				size++;
 				it = test.iterator();
 				iter = queue.iterator();
 				assertEquals(it.hasNext(), iter.hasNext());
-			} else
-			{
+			} else {
 				queue.remove();
 				test.remove(0);
 				it = test.iterator();
@@ -725,40 +670,33 @@ public class CAQTest
 	}
 
 	@Test
-	public void testAddAndRemove()
-	{
+	public void testAddAndRemove() {
 		queue.add(1);
 		Iterator<Integer> it = queue.iterator();
 		assertTrue(it.hasNext());
 		assertEquals(1, (int) it.next());
-		for (int i = 0; i < 10; i++)
-		{
+		for (int i = 0; i < 10; i++) {
 			assertFalse(it.hasNext());
 		}
 	}
 
 	@Test
-	public void testIteratorRemove()
-	{
+	public void testIteratorRemove() {
 		long seed = System.currentTimeMillis();
 		Random rand = new Random(seed);
 		int size = 0;
-		for (int i = 0; i < 100000; i++)
-		{
+		for (int i = 0; i < 100000; i++) {
 			float next = rand.nextFloat();
 
-			if (size == 0)
-			{
+			if (size == 0) {
 				next = 0.7f;
 			}
 
-			if (next >= 0.2f)
-			{
+			if (next >= 0.2f) {
 				test.add(i);
 				queue.add(i);
 				size++;
-			} else
-			{
+			} else {
 				test.remove(0);
 				queue.remove();
 				size--;
@@ -769,26 +707,21 @@ public class CAQTest
 		Iterator<Integer> i = test.iterator();
 
 		boolean calledNext = false;
-		while (i.hasNext())
-		{
+		while (i.hasNext()) {
 			float next = rand.nextFloat();
 
-			if (next < 0.4f && !calledNext)
-			{
+			if (next < 0.4f && !calledNext) {
 				next = 0.8f;
 			}
-			if (next >= 0.6f)
-			{
+			if (next >= 0.6f) {
 				i.next();
 				it.next();
 				calledNext = true;
 
 				assertEquals(i.hasNext(), it.hasNext());
-			} else
-			{
+			} else {
 
-				if (calledNext)
-				{
+				if (calledNext) {
 					i.remove();
 					it.remove();
 				}
@@ -801,15 +734,13 @@ public class CAQTest
 	}
 
 	@Test
-	public void testAllTogether()
-	{
+	public void testAllTogether() {
 		addRandomInts();
 		testElementsEqual();
 
 		Collection<Integer> c = new HashSet<Integer>();
 		Random rand = new Random();
-		for (int i = 0; i < 1500; i++)
-		{
+		for (int i = 0; i < 1500; i++) {
 			c.add(rand.nextInt());
 		}
 
@@ -819,8 +750,7 @@ public class CAQTest
 		testElementsEqual();
 
 		c = new TreeSet<Integer>();
-		for (int i = 0; i < 1500; i++)
-		{
+		for (int i = 0; i < 1500; i++) {
 			c.add(rand.nextInt(1000));
 		}
 
@@ -844,36 +774,29 @@ public class CAQTest
 	}
 
 	@Test
-	public void testPeekNonNull()
-	{
-		for (int i = 0; i < 11; i++)
-		{
+	public void testPeekNonNull() {
+		for (int i = 0; i < 11; i++) {
 			queue.add(i);
 		}
-		for (int i = 0; i < 3; i++)
-		{
+		for (int i = 0; i < 3; i++) {
 			queue.remove();
 		}
 		assertEquals(3, (int) queue.peek());
 	}
 
 	@Test
-	public void testElementNonNull()
-	{
-		for (int i = 0; i < 11; i++)
-		{
+	public void testElementNonNull() {
+		for (int i = 0; i < 11; i++) {
 			queue.add(i);
 		}
-		for (int i = 0; i < 3; i++)
-		{
+		for (int i = 0; i < 3; i++) {
 			queue.remove();
 		}
 		assertEquals(3, (int) queue.element());
 	}
 
 	@Test
-	public void testCloneable()
-	{
+	public void testCloneable() {
 		CircularArrayQueue<Integer> clone = queue.clone();
 		assertTrue(clone.equals(queue));
 		assertFalse(clone == queue);
