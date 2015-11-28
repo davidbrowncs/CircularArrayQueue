@@ -113,13 +113,11 @@ public class CircularArrayQueue<T> implements Queue<T>
 	public boolean contains(Object o)
 	{
 		Iterator<T> it = iterator();
-		T elem = null;
 		if (o == null)
 		{
 			while (it.hasNext())
 			{
-				elem = it.next();
-				if (elem == null)
+				if (it.next() == null)
 				{
 					return true;
 				}
@@ -128,8 +126,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			while (it.hasNext())
 			{
-				elem = it.next();
-				if (o.equals(elem))
+				if (o.equals(it.next()))
 				{
 					return true;
 				}
@@ -176,10 +173,8 @@ public class CircularArrayQueue<T> implements Queue<T>
 			if (start == end)
 			{
 				return false;
-			} else
-			{
-				return true;
 			}
+			return true;
 		}
 
 		/*
@@ -240,32 +235,26 @@ public class CircularArrayQueue<T> implements Queue<T>
 	 *
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings("unchecked")
 	@Override
 	public <E> E[] toArray(E[] a)
 	{
-		E[] ret;
 		if (a.length < size)
 		{
-			ret = (E[]) new Object[size];
-		} else
-		{
-			ret = a;
+			a = (E[]) new Object[size];
 		}
-		ret = (E[]) new Object[size];
+
 		Iterator<T> it = iterator();
-		E elem = null;
 		int counter = 0;
 		while (it.hasNext())
 		{
-			elem = (E) it.next();
-			ret[counter++] = elem;
+			a[counter++] = (E) it.next();
 		}
-		if (ret.length > size)
+		if (a.length > size)
 		{
-			ret[size] = null;
+			a[size] = null;
 		}
-		return ret;
+		return a;
 	}
 
 	/**
@@ -286,9 +275,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 			}
 			if (size > 1)
 			{
-				int toReplace = i;
-				elements[toReplace] = elements[toReplace + 1];
-				i++;
+				elements[i] = elements[i++ + 1];
 			} else
 			{
 				elements[i++] = null;
@@ -311,13 +298,11 @@ public class CircularArrayQueue<T> implements Queue<T>
 			return false;
 		}
 		int start = head;
-		T elem;
 		if (o == null)
 		{
 			while (start != tail)
 			{
-				elem = elements[start];
-				if (elem == null)
+				if (elements[start] == null)
 				{
 					localRemove(start);
 					return true;
@@ -334,18 +319,17 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			while (start != tail)
 			{
-				elem = elements[start];
-				if (o.equals(elem))
+				if (o.equals(elements[start]))
 				{
 					localRemove(start);
 					return true;
 				} else
 				{
 					start++;
-				}
-				if (start == capacity)
-				{
-					start = 0;
+					if (start == capacity)
+					{
+						start = 0;
+					}
 				}
 			}
 		}
@@ -365,12 +349,11 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			throw new NullPointerException("Given collection is null.");
 		}
-		T o;
+
 		Iterator i = c.iterator();
 		while (i.hasNext())
 		{
-			o = (T) i.next();
-			if (!contains(o))
+			if (!contains(i.next()))
 			{
 				return false;
 			}
@@ -391,12 +374,11 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			throw new NullPointerException("Given collection is null.");
 		}
+
 		Iterator<T> i = c.iterator();
-		T o = null;
 		while (i.hasNext())
 		{
-			o = i.next();
-			add(o);
+			add(i.next());
 		}
 		return true;
 	}
@@ -406,7 +388,6 @@ public class CircularArrayQueue<T> implements Queue<T>
 	 *
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
-	@SuppressWarnings({ "unchecked" })
 	@Override
 	public boolean removeAll(Collection<?> c)
 	{
@@ -414,12 +395,11 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			throw new NullPointerException("Given collection is null");
 		}
+
 		Iterator<?> i = c.iterator();
-		T o = null;
 		while (i.hasNext())
 		{
-			o = (T) i.next();
-			remove(o);
+			remove(i.next());
 		}
 		return true;
 	}
