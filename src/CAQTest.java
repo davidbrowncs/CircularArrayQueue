@@ -1,7 +1,5 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -643,7 +641,14 @@ public class CAQTest
 
 		addRandomInts();
 		testElementsEqual();
+	}
 
+	@Test
+	public void testCloneable()
+	{
+		CircularArrayQueue<Integer> clone = queue.clone();
+		assertTrue(clone.equals(queue));
+		assertFalse(clone == queue);
 	}
 
 }

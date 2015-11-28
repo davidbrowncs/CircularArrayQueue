@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -25,8 +26,13 @@ import java.util.Queue;
  * @param <T>
  *            Type of object to be stored in the CircularArrayQueue
  */
-public class CircularArrayQueue<T> implements Queue<T>
+public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2675072648272502131L;
+
 	/**
 	 * The default capacity of the queue when none is provided by the user.
 	 */
@@ -672,7 +678,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			return false;
 		}
-		if (!Arrays.equals(toArray(), other.elements))
+		if (!Arrays.equals(toArray(), other.toArray()))
 		{
 			return false;
 		}
@@ -689,5 +695,22 @@ public class CircularArrayQueue<T> implements Queue<T>
 			return false;
 		}
 		return true;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CircularArrayQueue<T> clone()
+	{
+		CircularArrayQueue<T> c;
+		try
+		{
+			c = (CircularArrayQueue<T>) super.clone();
+			c.elements = Arrays.copyOf(this.elements, capacity);
+			return c;
+		} catch (CloneNotSupportedException e)
+		{
+			throw new InternalError(e);
+		}
+
 	}
 }
