@@ -390,9 +390,7 @@ public class CAQTest
 
 	private void addRandomInts()
 	{
-		long seed = System.currentTimeMillis();
-		// System.out.println(seed);
-		Random rand = new Random(seed);
+		Random rand = new Random(System.currentTimeMillis());
 
 		int size = 0;
 		for (int i = 0; i < 1000; i++)
@@ -598,6 +596,179 @@ public class CAQTest
 	{
 		assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
 		assertEquals(test.size(), queue.size());
+	}
+
+	@Test
+	public void testEmptyIterator()
+	{
+		Iterator<Integer> it = queue.iterator();
+		assertFalse(it.hasNext());
+	}
+
+	@Test
+	public void testHasNext()
+	{
+		queue.add(1);
+		Iterator<Integer> it = queue.iterator();
+		for (int i = 0; i < 10; i++)
+		{
+			assertTrue(it.hasNext());
+		}
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testEmptyExceptionIterator()
+	{
+		Iterator<Integer> it = queue.iterator();
+		it.next();
+	}
+
+	@Test
+	public void multipleIteratorOperations()
+	{
+		long seed = System.currentTimeMillis();
+		System.out.println(seed);
+		Random rand = new Random(1448741436592l);
+		for (int i = 0; i < 1000000; i++)
+		{
+			float next = rand.nextFloat();
+
+			if (test.size() == 0)
+			{
+				next = 0.9f;
+			}
+
+			if (next >= 0.8f)
+			{
+				queue.add(i);
+				test.add(i);
+			} else
+			{
+
+				test.remove(0);
+				queue.remove();
+			}
+
+			assertTrue(Arrays.equals(queue.toArray(), test.toArray()));
+			assertTrue(Arrays.equals(queue.toArray(new Object[0]), test.toArray(new Object[0])));
+		}
+
+		queue = new CircularArrayQueue<>();
+		test = new ArrayList<>();
+
+		int size = 0;
+		for (int i = 0; i < 100000; i++)
+		{
+			Iterator<Integer> it = test.iterator();
+			Iterator<Integer> iter = queue.iterator();
+
+			assertEquals(it.hasNext(), iter.hasNext());
+
+			if (size == 0)
+			{
+				assertFalse(iter.hasNext());
+			}
+
+			float next = rand.nextFloat();
+			if (size == 0)
+			{
+				next = 0.4f;
+			}
+
+			if (next >= 0.3f)
+			{
+				queue.add(i);
+				test.add(i);
+				size++;
+				it = test.iterator();
+				iter = queue.iterator();
+				if (i == 59)
+				{
+					System.out.println("Failure");
+				}
+				assertEquals(it.hasNext(), iter.hasNext());
+			} else
+			{
+				queue.remove();
+				test.remove(0);
+				it = test.iterator();
+				iter = queue.iterator();
+				size--;
+				assertEquals(it.hasNext(), iter.hasNext());
+			}
+		}
+	}
+
+	@Test
+	public void testAddAndRemove()
+	{
+		queue.add(1);
+		Iterator<Integer> it = queue.iterator();
+		assertTrue(it.hasNext());
+		assertEquals(1, (int) it.next());
+		for (int i = 0; i < 10; i++)
+		{
+			assertFalse(it.hasNext());
+		}
+	}
+
+	// @Test
+	public void testIteratorRemove()
+	{
+		long seed = System.currentTimeMillis();
+		Random rand = new Random(seed);
+		int size = 0;
+		for (int i = 0; i < 100000; i++)
+		{
+			float next = rand.nextFloat();
+
+			if (size == 0)
+			{
+				next = 0.7f;
+			}
+
+			if (next >= 0.2f)
+			{
+				test.add(i);
+				queue.add(i);
+				size++;
+			} else
+			{
+				test.remove(0);
+				queue.remove();
+				size--;
+			}
+		}
+
+		Iterator<Integer> it = queue.iterator();
+		Iterator<Integer> i = test.iterator();
+
+		boolean removedPrevious = false;
+		for (int i1 = 0; i1 < 100000 && i.hasNext(); i1++)
+		{
+			float next = rand.nextFloat();
+
+			if (removedPrevious)
+			{
+				next = 0.6f;
+			}
+			if (i1 == 0)
+			{
+				next = 0.6f;
+			}
+
+			if (next >= 0.5f)
+			{
+				assertEquals(it.next(), i.next());
+				removedPrevious = false;
+			} else
+			{
+				it.remove();
+				i.remove();
+				removedPrevious = true;
+				assertTrue(Arrays.equals(queue.toArray(), test.toArray()));
+			}
+		}
 	}
 
 	@Test

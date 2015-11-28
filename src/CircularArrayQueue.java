@@ -26,7 +26,7 @@ import java.util.Queue;
  * @param <T>
  *            Type of object to be stored in the CircularArrayQueue
  */
-public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
+public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable, Iterable<T>
 {
 	/**
 	 *
@@ -212,12 +212,13 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 		/**
 		 * Initialise the start pointer to the head of the queue
 		 */
-		int start = head;
+		private int pointer = head;
 
-		/**
-		 * Initialise the end pointer to the tail of the queue
-		 */
-		int end = tail;
+		private boolean nextCalled = false;
+
+		private int maxNextCalls = size;
+
+		private int calls = 0;
 
 		/*
 		 * (non-Javadoc)
@@ -227,11 +228,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 		@Override
 		public boolean hasNext()
 		{
-			if (start == end)
-			{
-				return false;
-			}
-			return true;
+			return calls != maxNextCalls;
 		}
 
 		/*
@@ -246,14 +243,46 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 			{
 				throw new NoSuchElementException();
 			}
-			T o = elements[start++];
-			if (start == capacity)
+			nextCalled = true;
+			calls++;
+			T o = elements[pointer++];
+			if (pointer == capacity)
 			{
-				start = 0;
+				pointer = 0;
 			}
 			return o;
 		}
 
+		@Override
+		public void remove()
+		{
+			if (!nextCalled)
+			{
+				throw new IllegalStateException();
+			}
+			pointer--;
+			maxNextCalls--;
+			if (pointer == -1)
+			{
+				pointer = capacity - 1;
+			}
+			if (tail > pointer)
+			{
+				System.arraycopy(elements, pointer + 1, elements, pointer, tail - pointer - 1);
+			} else
+			{
+				System.arraycopy(elements, pointer + 1, elements, pointer, capacity - pointer - 1);
+				elements[capacity - 1] = elements[0];
+				System.arraycopy(elements, 1, elements, 0, tail);
+			}
+			size--;
+			tail--;
+			if (tail < 0)
+			{
+				tail = capacity - 1;
+			}
+			nextCalled = false;
+		}
 	}
 
 	/*
@@ -306,10 +335,22 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 		{
 			a = (E[]) new Object[size];
 		}
+		if (size == 0)
+		{
+			return a;
+		}
 
 		if (head < tail)
 		{
-			System.arraycopy(elements, head, a, 0, size);
+			try
+			{
+				System.arraycopy(elements, head, a, 0, size);
+			} catch (ArrayIndexOutOfBoundsException e)
+			{
+				System.out.println("Caught");
+				// Caught
+			}
+
 		} else
 		{
 			System.arraycopy(elements, head, a, 0, capacity - head);
@@ -330,20 +371,6 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 	 * @param i
 	 *            The index at which to start iterating from
 	 */
-	private void localRemove(int i, int j)
-	{
-		if (i < j)
-		{
-			System.arraycopy(elements, i + 1, elements, i, j - i);
-		} else
-		{
-			System.arraycopy(elements, i + 1, elements, i, capacity - i - 1);
-			elements[capacity - 1] = elements[0];
-			System.arraycopy(elements, 1, elements, 0, j);
-		}
-		size--;
-		tail--;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -357,39 +384,27 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable
 		{
 			return false;
 		}
-		int start = head;
+
+		Iterator<T> it = iterator();
+
 		if (o == null)
 		{
-			while (start != tail)
+			while (it.hasNext())
 			{
-				if (elements[start] == null)
+				if (it.next() == null)
 				{
-					localRemove(start, tail);
+					it.remove();
 					return true;
-				} else
-				{
-					start++;
-					if (start == capacity)
-					{
-						start = 0;
-					}
 				}
 			}
 		} else
 		{
-			while (start != tail)
+			while (it.hasNext())
 			{
-				if (o.equals(elements[start]))
+				if (o.equals(it.next()))
 				{
-					localRemove(start, tail);
+					it.remove();
 					return true;
-				} else
-				{
-					start++;
-					if (start == capacity)
-					{
-						start = 0;
-					}
 				}
 			}
 		}
