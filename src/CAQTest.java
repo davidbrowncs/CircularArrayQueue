@@ -644,6 +644,34 @@ public class CAQTest
 	}
 
 	@Test
+	public void testPeekNonNull()
+	{
+		for (int i = 0; i < 11; i++)
+		{
+			queue.add(i);
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			queue.remove();
+		}
+		assertEquals(3, (int) queue.peek());
+	}
+
+	@Test
+	public void testElementNonNull()
+	{
+		for (int i = 0; i < 11; i++)
+		{
+			queue.add(i);
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			queue.remove();
+		}
+		assertEquals(3, (int) queue.element());
+	}
+
+	@Test
 	public void testCloneable()
 	{
 		CircularArrayQueue<Integer> clone = queue.clone();
