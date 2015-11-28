@@ -5,9 +5,25 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
- * @author David
+ *
+ * Copyright (C) 2015 David Brown. Permission is granted to copy, distribute
+ * and/or modify this document under the terms of the GNU Free Documentation
+ * License, Version 1.3 or any later version published by the Free Software
+ * Foundation; with no Invariant Sections, no Front-Cover Texts, and no
+ * Back-Cover Texts. A copy of the license is included in the section entitled
+ * "GNU Free Documentation License".
+ *
+ * @author David Brown
+ *
+ *         Resizable circular array queue implementation of the {@code List}
+ *         interface. Implements all optional methods but the
+ *         {@code retainAll(Collection c)} method from the List interface.
+ *
+ *         Provides constant time access for {@code size}, {@code add} (although
+ *         this is amortized constant time), {@code remove} operations.
  *
  * @param <T>
+ *            Type of object to be stored in the CircularArrayQueue
  */
 public class CircularArrayQueue<T> implements Queue<T>
 {
@@ -79,7 +95,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#size()
 	 */
 	@Override
@@ -90,7 +106,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
@@ -124,7 +140,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
@@ -151,7 +167,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Iterator#hasNext()
 		 */
 		@Override
@@ -168,7 +184,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Iterator#next()
 		 */
 		@Override
@@ -190,7 +206,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
@@ -201,7 +217,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
@@ -212,7 +228,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -275,7 +291,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
@@ -329,7 +345,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -355,7 +371,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#addAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -378,7 +394,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -401,7 +417,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
@@ -412,7 +428,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
@@ -466,7 +482,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
@@ -487,7 +503,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
@@ -498,7 +514,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
@@ -519,7 +535,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
@@ -536,7 +552,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#element()
 	 */
 	@Override
@@ -551,7 +567,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
@@ -568,7 +584,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -586,7 +602,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

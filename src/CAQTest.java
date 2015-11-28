@@ -121,8 +121,7 @@ public class CAQTest
 		}
 	}
 
-	// TODO Readd
-	// @Test
+	@Test
 	public void testLoadsOfAdding()
 	{
 		Random rand = new Random();
