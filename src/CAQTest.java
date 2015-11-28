@@ -1,14 +1,17 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Random;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -121,7 +124,7 @@ public class CAQTest
 		}
 	}
 
-	@Test
+	// @Test
 	public void testLoadsOfAdding()
 	{
 		Random rand = new Random();
@@ -355,17 +358,43 @@ public class CAQTest
 	{
 		addRandomInts();
 
-		Integer arr1[] = Arrays.copyOf(test.toArray(), test.size(), Integer[].class);
-		Integer arr2[] = Arrays.copyOf(queue.toArray(), queue.size(), Integer[].class);
+		Object[] arr1 = test.toArray();
+		Object[] arr2 = queue.toArray();
 
-		HashSet<Integer> set1 = new HashSet<>(Arrays.asList(arr1));
-		HashSet<Integer> set2 = new HashSet<>(Arrays.asList(arr2));
-		assertTrue(set1.equals(set2));
+		assertTrue(Arrays.equals(arr1, arr2));
+
+		queue = new CircularArrayQueue<>();
+		test = new ArrayList<>();
+
+		for (int i = 0; i < 1000; i++)
+		{
+			queue.add(i);
+			test.add(i);
+		}
+
+		arr1 = test.toArray();
+		arr2 = queue.toArray();
+
+		assertTrue(Arrays.equals(arr1, arr2));
+	}
+
+	@Test
+	public void testConstructor()
+	{
+		for (int i = 0; i < 1000; i++)
+		{
+			test.add(i);
+		}
+
+		queue = new CircularArrayQueue<>(test);
+		assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
 	}
 
 	private void addRandomInts()
 	{
-		Random rand = new Random();
+		long seed = System.currentTimeMillis();
+		// System.out.println(seed);
+		Random rand = new Random(seed);
 
 		int size = 0;
 		for (int i = 0; i < 1000; i++)
@@ -381,10 +410,12 @@ public class CAQTest
 				int nextInt = rand.nextInt(1000);
 				test.add(nextInt);
 				queue.add(nextInt);
+				size++;
 			} else
 			{
 				test.remove(0);
 				queue.remove();
+				size--;
 			}
 		}
 	}
@@ -397,10 +428,27 @@ public class CAQTest
 		Object[] arr1 = test.toArray(new Object[10]);
 		Object[] arr2 = queue.toArray(new Object[10]);
 
-		HashSet<Object> set1 = new HashSet<Object>(Arrays.asList(arr1));
-		HashSet<Object> set2 = new HashSet<Object>(Arrays.asList(arr2));
+		assertTrue(Arrays.equals(arr1, arr2));
 
-		assertTrue(set1.equals(set2));
+		queue = new CircularArrayQueue<>();
+		test = new ArrayList<>();
+
+		for (int i = 0; i < 1500; i++)
+		{
+			queue.add(i);
+			test.add(i);
+		}
+
+		arr1 = test.toArray(new Object[0]);
+		arr2 = queue.toArray(new Object[0]);
+
+		assertTrue(Arrays.equals(arr1, arr2));
+
+		arr1 = test.toArray(new Object[1502]);
+		arr2 = queue.toArray(new Object[1502]);
+
+		assertTrue(arr2[1500] == null);
+
 	}
 
 	@Test
@@ -529,6 +577,73 @@ public class CAQTest
 	public void testNotSupported()
 	{
 		queue.retainAll(null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorArguments()
+	{
+		queue = new CircularArrayQueue<>(-100);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testConstructorIllegal()
+	{
+		test = new ArrayList<>();
+		for (int i = 0; i < 100; i++)
+		{
+			test.add(i);
+		}
+		queue = new CircularArrayQueue<>(test, 99);
+	}
+
+	private void testElementsEqual()
+	{
+		assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
+		assertEquals(test.size(), queue.size());
+	}
+
+	@Test
+	public void testAllTogether()
+	{
+		addRandomInts();
+		testElementsEqual();
+
+		Collection<Integer> c = new HashSet<Integer>();
+		Random rand = new Random();
+		for (int i = 0; i < 1500; i++)
+		{
+			c.add(rand.nextInt());
+		}
+
+		test.addAll(c);
+		queue.addAll(c);
+
+		testElementsEqual();
+
+		c = new TreeSet<Integer>();
+		for (int i = 0; i < 1500; i++)
+		{
+			c.add(rand.nextInt(1000));
+		}
+
+		test.removeAll(c);
+		queue.removeAll(c);
+
+		addRandomInts();
+		testElementsEqual();
+
+		queue = new CircularArrayQueue<>(c);
+		test = new ArrayList<>(c);
+		testElementsEqual();
+		addRandomInts();
+		testElementsEqual();
+
+		queue = new CircularArrayQueue<>(100);
+		test = new ArrayList<>(100);
+
+		addRandomInts();
+		testElementsEqual();
+
 	}
 
 }

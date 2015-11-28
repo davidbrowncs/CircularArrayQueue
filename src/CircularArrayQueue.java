@@ -68,8 +68,59 @@ public class CircularArrayQueue<T> implements Queue<T>
 	@SuppressWarnings("unchecked")
 	public CircularArrayQueue(int initialCapacity)
 	{
+		if (initialCapacity <= 0)
+		{
+			throw new IllegalArgumentException();
+		}
 		elements = (T[]) new Object[initialCapacity];
 		capacity = initialCapacity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public CircularArrayQueue(Collection<? extends T> c, int initialCapacity)
+	{
+		if (c == null)
+		{
+			throw new NullPointerException();
+		}
+		if (initialCapacity < c.size())
+		{
+			throw new IllegalArgumentException();
+		}
+		if ((size = c.size()) != 0)
+		{
+			capacity = initialCapacity;
+			elements = (T[]) new Object[capacity];
+			System.arraycopy(c.toArray(), 0, elements, 0, size);
+			tail = size;
+		} else
+		{
+			capacity = initialCapacity;
+			elements = (T[]) new Object[capacity];
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public CircularArrayQueue(Collection<? extends T> c)
+	{
+		if (c == null)
+		{
+			throw new NullPointerException();
+		}
+		capacity = c.size() << 1;
+		if (capacity < 0)
+		{
+			throw new IllegalStateException();
+		}
+		if ((size = c.size()) != 0)
+		{
+			elements = (T[]) new Object[capacity];
+			System.arraycopy(c.toArray(), 0, elements, 0, size);
+			tail = size;
+		} else
+		{
+			elements = (T[]) new Object[capacity];
+		}
 	}
 
 	/**
@@ -95,7 +146,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#size()
 	 */
 	@Override
@@ -106,7 +157,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
@@ -137,7 +188,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
@@ -187,7 +238,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			if (!hasNext())
 			{
-				throw new NoSuchElementException("There are no more elements in this queue.");
+				throw new NoSuchElementException();
 			}
 			T o = elements[start++];
 			if (start == capacity)
@@ -201,7 +252,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
@@ -212,27 +263,34 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
 	public Object[] toArray()
 	{
 		Object[] a = new Object[size];
-		Iterator<T> it = iterator();
 
-		int counter = 0;
-		while (it.hasNext())
+		if (size == 0)
 		{
-			a[counter++] = it.next();
+			return a;
 		}
 
-		return a;
+		if (head < tail)
+		{
+			System.arraycopy(elements, head, a, 0, size);
+			return a;
+		} else
+		{
+			System.arraycopy(elements, head, a, 0, capacity - head);
+			System.arraycopy(elements, 0, a, capacity - head, tail);
+			return a;
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
@@ -244,11 +302,13 @@ public class CircularArrayQueue<T> implements Queue<T>
 			a = (E[]) new Object[size];
 		}
 
-		Iterator<T> it = iterator();
-		int counter = 0;
-		while (it.hasNext())
+		if (head < tail)
 		{
-			a[counter++] = (E) it.next();
+			System.arraycopy(elements, head, a, 0, size);
+		} else
+		{
+			System.arraycopy(elements, head, a, 0, capacity - head);
+			System.arraycopy(elements, 0, a, capacity - head, tail);
 		}
 		if (a.length > size)
 		{
@@ -265,21 +325,16 @@ public class CircularArrayQueue<T> implements Queue<T>
 	 * @param i
 	 *            The index at which to start iterating from
 	 */
-	private void localRemove(int i)
+	private void localRemove(int i, int j)
 	{
-		while (i != tail)
+		if (i < j)
 		{
-			if (i == capacity)
-			{
-				i = 0;
-			}
-			if (size > 1)
-			{
-				elements[i] = elements[i++ + 1];
-			} else
-			{
-				elements[i++] = null;
-			}
+			System.arraycopy(elements, i + 1, elements, i, j - i);
+		} else
+		{
+			System.arraycopy(elements, i + 1, elements, i, capacity - i - 1);
+			elements[capacity - 1] = elements[0];
+			System.arraycopy(elements, 1, elements, 0, j);
 		}
 		size--;
 		tail--;
@@ -287,7 +342,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
@@ -304,7 +359,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 			{
 				if (elements[start] == null)
 				{
-					localRemove(start);
+					localRemove(start, tail);
 					return true;
 				} else
 				{
@@ -321,7 +376,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 			{
 				if (o.equals(elements[start]))
 				{
-					localRemove(start);
+					localRemove(start, tail);
 					return true;
 				} else
 				{
@@ -338,16 +393,16 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean containsAll(Collection<?> c)
 	{
 		if (c == null)
 		{
-			throw new NullPointerException("Given collection is null.");
+			throw new NullPointerException();
 		}
 
 		Iterator i = c.iterator();
@@ -363,7 +418,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#addAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -372,7 +427,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 	{
 		if (c == null)
 		{
-			throw new NullPointerException("Given collection is null.");
+			throw new NullPointerException();
 		}
 
 		Iterator<T> i = c.iterator();
@@ -385,7 +440,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@Override
@@ -406,7 +461,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
@@ -417,16 +472,13 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
 	public void clear()
 	{
-		for (int i = 0; i < elements.length; i++)
-		{
-			elements[i] = null;
-		}
+		// We don't even need to null any elements!
 		tail = 0;
 		head = 0;
 		size = 0;
@@ -444,8 +496,13 @@ public class CircularArrayQueue<T> implements Queue<T>
 	 */
 	private void resize()
 	{
+		int newCap = capacity << 1;
+		if (newCap < 0)
+		{
+			throw new IllegalStateException();
+		}
 		@SuppressWarnings("unchecked")
-		T[] newElements = (T[]) new Object[capacity * 2];
+		T[] newElements = (T[]) new Object[newCap];
 		int i = head;
 		int j = tail - 1;
 		int counter = 0;
@@ -466,12 +523,12 @@ public class CircularArrayQueue<T> implements Queue<T>
 		tail = counter;
 		head = 0;
 		elements = newElements;
-		capacity *= 2;
+		capacity = newCap;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
@@ -492,7 +549,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
@@ -503,7 +560,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
@@ -524,7 +581,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
@@ -541,7 +598,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#element()
 	 */
 	@Override
@@ -556,7 +613,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
@@ -573,7 +630,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -582,7 +639,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + capacity;
-		result = prime * result + Arrays.hashCode(elements);
+		result = prime * result + Arrays.hashCode(toArray());
 		result = prime * result + head;
 		result = prime * result + size;
 		result = prime * result + tail;
@@ -591,9 +648,10 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -609,13 +667,12 @@ public class CircularArrayQueue<T> implements Queue<T>
 		{
 			return false;
 		}
-		@SuppressWarnings("rawtypes")
 		CircularArrayQueue other = (CircularArrayQueue) obj;
 		if (capacity != other.capacity)
 		{
 			return false;
 		}
-		if (!Arrays.equals(elements, other.elements))
+		if (!Arrays.equals(toArray(), other.elements))
 		{
 			return false;
 		}
