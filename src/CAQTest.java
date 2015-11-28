@@ -90,6 +90,36 @@ public class CAQTest
 	}
 
 	@Test
+	public void yetAnotherIteratorTest()
+	{
+		for (int i = 0; i < 100000; i++)
+		{
+			queue.add(i);
+			test.add(i);
+		}
+
+		Iterator<Integer> i = test.iterator();
+		Iterator<Integer> it = queue.iterator();
+
+		Random rand = new Random();
+		while (i.hasNext())
+		{
+			assertEquals(i.next(), it.next());
+
+			if (rand.nextFloat() >= 0.5 && i.hasNext())
+			{
+				i.remove();
+				it.remove();
+			}
+
+			assertEquals(i.hasNext(), it.hasNext());
+			assertEquals(test.size(), queue.size());
+			assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
+		}
+
+	}
+
+	@Test
 	public void testMultipleAddRemove()
 	{
 		Random rand = new Random();
@@ -122,7 +152,7 @@ public class CAQTest
 		}
 	}
 
-	// @Test
+	@Test
 	public void testLoadsOfAdding()
 	{
 		Random rand = new Random();
@@ -627,8 +657,7 @@ public class CAQTest
 	public void multipleIteratorOperations()
 	{
 		long seed = System.currentTimeMillis();
-		System.out.println(seed);
-		Random rand = new Random(1448741436592l);
+		Random rand = new Random(seed);
 		for (int i = 0; i < 1000000; i++)
 		{
 			float next = rand.nextFloat();
@@ -682,10 +711,6 @@ public class CAQTest
 				size++;
 				it = test.iterator();
 				iter = queue.iterator();
-				if (i == 59)
-				{
-					System.out.println("Failure");
-				}
 				assertEquals(it.hasNext(), iter.hasNext());
 			} else
 			{
@@ -712,7 +737,7 @@ public class CAQTest
 		}
 	}
 
-	// @Test
+	@Test
 	public void testIteratorRemove()
 	{
 		long seed = System.currentTimeMillis();
@@ -743,32 +768,36 @@ public class CAQTest
 		Iterator<Integer> it = queue.iterator();
 		Iterator<Integer> i = test.iterator();
 
-		boolean removedPrevious = false;
-		for (int i1 = 0; i1 < 100000 && i.hasNext(); i1++)
+		boolean calledNext = false;
+		while (i.hasNext())
 		{
 			float next = rand.nextFloat();
 
-			if (removedPrevious)
+			if (next < 0.4f && !calledNext)
 			{
-				next = 0.6f;
+				next = 0.8f;
 			}
-			if (i1 == 0)
+			if (next >= 0.6f)
 			{
-				next = 0.6f;
-			}
+				i.next();
+				it.next();
+				calledNext = true;
 
-			if (next >= 0.5f)
-			{
-				assertEquals(it.next(), i.next());
-				removedPrevious = false;
+				assertEquals(i.hasNext(), it.hasNext());
 			} else
 			{
-				it.remove();
-				i.remove();
-				removedPrevious = true;
-				assertTrue(Arrays.equals(queue.toArray(), test.toArray()));
+
+				if (calledNext)
+				{
+					i.remove();
+					it.remove();
+				}
+
+				assertEquals(i.hasNext(), it.hasNext());
+				calledNext = false;
 			}
 		}
+
 	}
 
 	@Test
@@ -848,6 +877,7 @@ public class CAQTest
 		CircularArrayQueue<Integer> clone = queue.clone();
 		assertTrue(clone.equals(queue));
 		assertFalse(clone == queue);
+		assertTrue(Arrays.equals(clone.toArray(), queue.toArray()));
 	}
 
 }

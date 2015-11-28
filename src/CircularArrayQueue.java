@@ -207,35 +207,20 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	 * Class used to implement the iterator for this CircularArrayQueue
 	 * collection
 	 */
-	private class CircularArrayQueueIterator implements Iterator<T>
+	private class It implements Iterator<T>
 	{
-		/**
-		 * Initialise the start pointer to the head of the queue
-		 */
 		private int pointer = head;
 
-		private boolean nextCalled = false;
+		private boolean calledNext = false;
 
-		private int maxNextCalls = size;
+		private int nextCount = 0;
 
-		private int calls = 0;
-
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see java.util.Iterator#hasNext()
-		 */
 		@Override
 		public boolean hasNext()
 		{
-			return calls != maxNextCalls;
+			return (size == capacity) ? nextCount == 0 : pointer != tail;
 		}
 
-		/*
-		 * (non-Javadoc)
-		 *
-		 * @see java.util.Iterator#next()
-		 */
 		@Override
 		public T next()
 		{
@@ -243,9 +228,9 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			{
 				throw new NoSuchElementException();
 			}
-			nextCalled = true;
-			calls++;
+			calledNext = true;
 			T o = elements[pointer++];
+			nextCount++;
 			if (pointer == capacity)
 			{
 				pointer = 0;
@@ -256,33 +241,34 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		@Override
 		public void remove()
 		{
-			if (!nextCalled)
+			if (!calledNext)
 			{
 				throw new IllegalStateException();
 			}
-			pointer--;
-			maxNextCalls--;
-			if (pointer == -1)
+			int prev = pointer - 1;
+			if (head <= tail)
 			{
-				pointer = capacity - 1;
-			}
-			if (tail > pointer)
-			{
-				System.arraycopy(elements, pointer + 1, elements, pointer, tail - pointer - 1);
+				System.arraycopy(elements, pointer, elements, prev, tail - prev);
 			} else
 			{
-				System.arraycopy(elements, pointer + 1, elements, pointer, capacity - pointer - 1);
+				System.arraycopy(elements, pointer, elements, prev, capacity - prev);
 				elements[capacity - 1] = elements[0];
 				System.arraycopy(elements, 1, elements, 0, tail);
 			}
-			size--;
 			tail--;
+			pointer--;
 			if (tail < 0)
 			{
 				tail = capacity - 1;
 			}
-			nextCalled = false;
+			if (pointer < 0)
+			{
+				pointer = capacity - 1;
+			}
+			size--;
+			calledNext = false;
 		}
+
 	}
 
 	/*
@@ -293,7 +279,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 	@Override
 	public Iterator<T> iterator()
 	{
-		return new CircularArrayQueueIterator();
+		return new It();
 	}
 
 	/*
@@ -362,15 +348,6 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		}
 		return a;
 	}
-
-	/**
-	 * Used in remove(Object o) to iterate from the point where the given
-	 * element is found, to the tail pointer, replacing each element with the
-	 * one following it
-	 *
-	 * @param i
-	 *            The index at which to start iterating from
-	 */
 
 	/*
 	 * (non-Javadoc)
