@@ -95,7 +95,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#size()
 	 */
 	@Override
@@ -106,7 +106,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
@@ -140,7 +140,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
@@ -167,7 +167,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.util.Iterator#hasNext()
 		 */
 		@Override
@@ -184,7 +184,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.util.Iterator#next()
 		 */
 		@Override
@@ -206,7 +206,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
@@ -217,18 +217,27 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
 	public Object[] toArray()
 	{
-		return Arrays.copyOf(elements, size);
+		Object[] a = new Object[size];
+		Iterator<T> it = iterator();
+
+		int counter = 0;
+		while (it.hasNext())
+		{
+			a[counter++] = it.next();
+		}
+
+		return a;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -291,7 +300,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
@@ -345,7 +354,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -371,7 +380,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#addAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -394,7 +403,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -417,7 +426,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
@@ -428,7 +437,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
@@ -482,7 +491,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
@@ -503,7 +512,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
@@ -514,7 +523,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
@@ -535,7 +544,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
@@ -552,7 +561,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#element()
 	 */
 	@Override
@@ -567,7 +576,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
@@ -584,7 +593,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -602,7 +611,7 @@ public class CircularArrayQueue<T> implements Queue<T>
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
