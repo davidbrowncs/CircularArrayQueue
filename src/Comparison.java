@@ -10,41 +10,35 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
-public class Comparison
-{
+public class Comparison {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public @interface Test
-	{}
+	public @interface Test {}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public @interface Before
-	{}
+	public @interface Before {}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public @interface After
-	{}
+	public @interface After {}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public @interface Finally
-	{}
+	public @interface Finally {}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.METHOD)
-	public @interface Ignore
-	{}
+	public @interface Ignore {}
 
 	@Ignore
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		Comparison c = new Comparison();
 
 		Method beforeMethod = null;
@@ -54,34 +48,26 @@ public class Comparison
 
 		ArrayList<Method> testMethods = new ArrayList<>();
 
-		for (Method m : methods)
-		{
-			if (m.isAnnotationPresent(Before.class))
-			{
+		for (Method m : methods) {
+			if (m.isAnnotationPresent(Before.class)) {
 				beforeMethod = m;
-			} else if (m.isAnnotationPresent(After.class))
-			{
+			} else if (m.isAnnotationPresent(After.class)) {
 				afterMethod = m;
-			} else if (m.isAnnotationPresent(Finally.class))
-			{
+			} else if (m.isAnnotationPresent(Finally.class)) {
 				finalMethod = m;
-			} else if (m.isAnnotationPresent(Test.class))
-			{
+			} else if (m.isAnnotationPresent(Test.class)) {
 				testMethods.add(m);
 			}
 		}
 
-		try
-		{
+		try {
 			repeatTests(c, testMethods, beforeMethod, afterMethod);
 
-			if (finalMethod != null)
-			{
+			if (finalMethod != null) {
 				finalMethod.invoke(c);
 			}
 
-		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-		{
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
@@ -96,25 +82,18 @@ public class Comparison
 	private static final int numTests = 15;
 
 	@Ignore
-	private static void repeatTests(Comparison c, ArrayList<Method> testMethods, Method beforeMethod, Method afterMethod)
-	{
-		for (Method m : testMethods)
-		{
-			for (int i = 0; i < numTests; i++)
-			{
-				try
-				{
-					if (beforeMethod != null)
-					{
+	private static void repeatTests(Comparison c, ArrayList<Method> testMethods, Method beforeMethod, Method afterMethod) {
+		for (Method m : testMethods) {
+			for (int i = 0; i < numTests; i++) {
+				try {
+					if (beforeMethod != null) {
 						beforeMethod.invoke(c);
 					}
 					m.invoke(c);
-					if (afterMethod != null)
-					{
+					if (afterMethod != null) {
 						afterMethod.invoke(c);
 					}
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-				{
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			}
@@ -123,20 +102,17 @@ public class Comparison
 	}
 
 	@Before
-	private void before()
-	{
+	private void before() {
 		ll = new LinkedList<>();
 		cq = new CircularArrayQueue<>();
 	}
 
-	private interface TestCase<T>
-	{
+	private interface TestCase<T> {
 		public void go(Queue<T> t);
 	}
 
 	@Ignore
-	private void testEach(TestCase<Object> t)
-	{
+	private void testEach(TestCase<Object> t) {
 		t.go(ll);
 		t.go(cq);
 		String name = Thread.currentThread().getStackTrace()[2].getMethodName();
@@ -146,12 +122,10 @@ public class Comparison
 	}
 
 	@Finally
-	private void printout()
-	{
+	private void printout() {
 		System.out.println("=======================================");
 		System.out.println("In summary:");
-		for (int i = 0; i < results.size(); i += 2)
-		{
+		for (int i = 0; i < results.size(); i += 2) {
 			double diff = results.get(i) - results.get(i + 1);
 			double avg = (results.get(i) + results.get(i + 1)) / 2;
 			double f = (diff / avg) * 100;
@@ -161,28 +135,21 @@ public class Comparison
 		}
 
 		BufferedWriter bw = null;
-		try
-		{
+		try {
 			bw = new BufferedWriter(new FileWriter(new File("test.csv")));
 
 			bw.write("Test,Linked list, Circular Array Queue\n");
 
-			for (int i = 0; i < results.size(); i += 2)
-			{
+			for (int i = 0; i < results.size(); i += 2) {
 				bw.write(testNames.get(i / 2) + "," + results.get(i) + "," + results.get(i + 1));
 				bw.write("\n");
 			}
 
-		} catch (IOException e)
-		{} finally
-		{
-			if (bw != null)
-			{
-				try
-				{
+		} catch (IOException e) {} finally {
+			if (bw != null) {
+				try {
 					bw.close();
-				} catch (IOException e)
-				{
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
@@ -190,13 +157,10 @@ public class Comparison
 	}
 
 	@Test
-	public void testAdd100000()
-	{
-		testEach((q) ->
-		{
+	public void testAdd100000() {
+		testEach((q) -> {
 			long beforeTime = System.nanoTime();
-			for (Integer i = 0; i < 100000; i++)
-			{
+			for (Integer i = 0; i < 100000; i++) {
 				q.add(i);
 			}
 			results.add(System.nanoTime() - beforeTime);
@@ -204,11 +168,9 @@ public class Comparison
 	}
 
 	@Test
-	public void testClear()
-	{
+	public void testClear() {
 
-		testEach((q) ->
-		{
+		testEach((q) -> {
 			long beforeTime = System.nanoTime();
 			q.clear();
 			results.add(System.nanoTime() - beforeTime);
@@ -217,31 +179,24 @@ public class Comparison
 	}
 
 	@Test
-	public void testMultipleAddRemove()
-	{
+	public void testMultipleAddRemove() {
 		long modCount = 1000000000;
 
-		testEach((q) ->
-		{
+		testEach((q) -> {
 			long beforeTime = System.nanoTime();
 			int mods = 0;
 			int max = Integer.MAX_VALUE / 3;
 			Random rand = new Random();
-			while (mods < modCount)
-			{
+			while (mods < modCount) {
 				float next = rand.nextFloat();
-				if (q.size() == 0)
-				{
+				if (q.size() == 0) {
 					next = 0.9f;
-				} else if (q.size() >= max)
-				{
+				} else if (q.size() >= max) {
 					next = 0.2f;
 				}
-				if (next >= 0.75f)
-				{
+				if (next >= 0.75f) {
 					q.add(mods);
-				} else
-				{
+				} else {
 					q.remove();
 				}
 				mods++;
@@ -252,38 +207,30 @@ public class Comparison
 	}
 
 	@Test
-	public void testStrings()
-	{
+	public void testStrings() {
 		long modCount = 10000000;
 		long maxCount = Integer.MAX_VALUE / 3;
 		List<ExpensiveObject> pregenerated = new ArrayList<>();
-		for (int i = 0; i < 1000; i++)
-		{
+		for (int i = 0; i < 1000; i++) {
 			pregenerated.add(new ExpensiveObject());
 		}
 
-		testEach((q) ->
-		{
+		testEach((q) -> {
 			long beforeTime = System.nanoTime();
 			Random rand = new Random();
 			long mods = 0;
-			while (mods < modCount)
-			{
+			while (mods < modCount) {
 				float next = rand.nextFloat();
 
-				if (q.size() == 0)
-				{
+				if (q.size() == 0) {
 					next = 0.8f;
-				} else if (q.size() >= maxCount)
-				{
+				} else if (q.size() >= maxCount) {
 					next = 0f;
 				}
 
-				if (next >= 0.5)
-				{
+				if (next >= 0.5) {
 					q.add(pregenerated.get(rand.nextInt(pregenerated.size())));
-				} else
-				{
+				} else {
 					q.remove();
 				}
 				mods++;
@@ -293,32 +240,59 @@ public class Comparison
 	}
 
 	@Test
-	public void testAddAll()
-	{
+	public void testRetainAll() {
+		Collection<Integer> toKeep = new ArrayList<>();
+		Random rand = new Random();
+		for (int i = 0; i < 1500; i++) {
+			toKeep.add(rand.nextInt(1500));
+		}
+		testEach((q) -> {
+			for (int i = 0; i < 1500; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.retainAll(toKeep);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testIterator() {
+		testEach((q) -> {
+			for (int i = 0; i < 10000000; i++) {
+				q.add(i);
+			}
+
+			Iterator<Object> it = q.iterator();
+			long beforeTime = System.nanoTime();
+			while (it.hasNext()) {
+				it.next();
+			}
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testAddAll() {
 		Collection<Integer> toAdd = new ArrayList<>();
-		for (int i = 0; i < 1000000; i++)
-		{
+		for (int i = 0; i < 1000000; i++) {
 			toAdd.add(i);
 		}
 
-		testEach((q) ->
-		{
+		testEach((q) -> {
 			long beforeTime = System.nanoTime();
 			q.addAll(toAdd);
 			results.add(System.nanoTime() - beforeTime);
 		});
 	}
 
-	private static class ExpensiveObject
-	{
+	private static class ExpensiveObject {
 		private String[] junkData;
 
-		private ExpensiveObject()
-		{
+		private ExpensiveObject() {
 			junkData = new String[1000];
 			Random rand = new Random();
-			for (int i = 0; i < 1000; i++)
-			{
+			for (int i = 0; i < 1000; i++) {
 				junkData[i] = "" + rand.nextInt();
 			}
 		}
