@@ -81,7 +81,35 @@ public class CAQTest {
 		assertEquals(20, queue.capacity());
 	}
 
-	// @Test
+	@Test
+	public void testAddingg() {
+		queue = new CircularArrayQueue<>(0);
+		assertTrue(queue.isEmpty());
+		queue.add(1);
+		assertEquals(1, queue.size());
+		assertFalse(queue.isEmpty());
+		for (int i = 0; i < 999; i++) {
+			assertEquals(1 + i, queue.size());
+			queue.add(i);
+			assertTrue(queue.contains(i));
+		}
+	}
+
+	@Test
+	public void testElementt() {
+		assertTrue(queue.isEmpty());
+		queue.add(1);
+		assertEquals(1, (int) queue.element());
+		assertEquals(1, queue.size());
+		for (int i = 0; i < 1000; i++) {
+			queue.add(i);
+		}
+		for (int i = 0; i < 1000; i++) {
+			assertEquals(1, (int) queue.element());
+		}
+	}
+
+	@Test
 	public void yetAnotherIteratorTest() {
 		for (int i = 0; i < 100000; i++) {
 			queue.add(i);
@@ -134,7 +162,7 @@ public class CAQTest {
 		}
 	}
 
-	// @Test
+	@Test
 	public void testLoadsOfAdding() {
 		Random rand = new Random();
 		int size = 0;
@@ -267,6 +295,45 @@ public class CAQTest {
 		it = queue.iterator();
 		assertTrue(it.hasNext());
 		it.next();
+		assertFalse(it.hasNext());
+
+		queue.add(2);
+		it = queue.iterator();
+		assertTrue(it.hasNext());
+		it.next();
+		assertTrue(it.hasNext());
+		it.next();
+		assertFalse(it.hasNext());
+
+		for (int i = 0; i < 5; i++) {
+			queue.add(1);
+		}
+		it = queue.iterator();
+		for (int i = 0; i < queue.size(); i++) {
+			assertTrue(it.hasNext());
+			it.next();
+		}
+		assertFalse(it.hasNext());
+
+		int sz = queue.size();
+		for (int i = 0; i < sz; i++) {
+			queue.remove();
+		}
+		assertFalse(queue.iterator().hasNext());
+		queue.add(1);
+		it = queue.iterator();
+		assertTrue(it.hasNext());
+		it.next();
+		assertFalse(it.hasNext());
+
+		queue.add(9);
+		it = queue.iterator();
+		sz = queue.size();
+		for (int i = 0; i < sz; i++) {
+			assertTrue(it.hasNext());
+			it.next();
+			it.remove();
+		}
 		assertFalse(it.hasNext());
 	}
 

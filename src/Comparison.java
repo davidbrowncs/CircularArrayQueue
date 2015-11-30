@@ -240,23 +240,6 @@ public class Comparison {
 	}
 
 	@Test
-	public void testRetainAll() {
-		Collection<Integer> toKeep = new ArrayList<>();
-		Random rand = new Random();
-		for (int i = 0; i < 1500; i++) {
-			toKeep.add(rand.nextInt(1500));
-		}
-		testEach((q) -> {
-			for (int i = 0; i < 1500; i++) {
-				q.add(i);
-			}
-			long beforeTime = System.nanoTime();
-			q.retainAll(toKeep);
-			results.add(System.nanoTime() - beforeTime);
-		});
-	}
-
-	@Test
 	public void testIterator() {
 		testEach((q) -> {
 			for (int i = 0; i < 10000000; i++) {
@@ -282,6 +265,104 @@ public class Comparison {
 		testEach((q) -> {
 			long beforeTime = System.nanoTime();
 			q.addAll(toAdd);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testPeek() {
+		testEach((q) -> {
+			for (int i = 0; i < 10000; i++) {
+				q.add(i);
+			}
+
+			long beforeTime = System.nanoTime();
+			q.peek();
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testPoll() {
+		testEach((q) -> {
+			for (int i = 0; i < 10000; i++) {
+				q.add(i);
+			}
+
+			long beforeTime = System.nanoTime();
+			q.poll();
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testContains() {
+		testEach((q) -> {
+			for (int i = 0; i < 10000; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.contains(10000);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testContainsAll() {
+		List<Integer> toCheck = new ArrayList<>();
+		for (int i = 100000; i >= 0; i--) {
+			toCheck.add(i);
+		}
+		testEach((q) -> {
+			for (int i = 0; i < 100000; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.containsAll(toCheck);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testRemoveAll() {
+		List<Integer> toCheck = new ArrayList<>();
+		for (int i = 100000; i >= 0; i--) {
+			toCheck.add(i);
+		}
+		testEach((q) -> {
+			for (int i = 0; i < 100000; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.removeAll(toCheck);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testRetainAll() {
+		List<Integer> toCheck = new ArrayList<>();
+		for (int i = 100000; i >= 0; i--) {
+			toCheck.add(i);
+		}
+		testEach((q) -> {
+			for (int i = 0; i < 100000; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.retainAll(toCheck);
+			results.add(System.nanoTime() - beforeTime);
+		});
+	}
+
+	@Test
+	public void testToArray() {
+		testEach((q) -> {
+			for (int i = 0; i < 100000; i++) {
+				q.add(i);
+			}
+			long beforeTime = System.nanoTime();
+			q.toArray();
 			results.add(System.nanoTime() - beforeTime);
 		});
 	}

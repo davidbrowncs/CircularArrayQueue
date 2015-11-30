@@ -85,19 +85,11 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		if (c == null) {
 			throw new NullPointerException();
 		}
-		int cs = c.size();
-		if (initialCapacity < cs) {
+		if (initialCapacity < c.size()) {
 			throw new IllegalArgumentException();
 		}
-		if ((size = cs) != 0) {
-			capacity = initialCapacity;
-			elements = (T[]) new Object[capacity];
-			System.arraycopy(c.toArray(), 0, elements, 0, size);
-			tail = size;
-		} else {
-			capacity = initialCapacity;
-			elements = (T[]) new Object[initialCapacity];
-		}
+		elements = (T[]) new Object[initialCapacity];
+		addAll(c);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,18 +97,8 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		if (c == null) {
 			throw new NullPointerException();
 		}
-		int cs = c.size();
-		capacity = ((cs << 1) + cs) >> 1;
-		if (capacity < 0) {
-			throw new IllegalStateException();
-		}
-		if ((size = cs) != 0) {
-			elements = (T[]) new Object[capacity];
-			System.arraycopy(c.toArray(), 0, elements, 0, size);
-			tail = size;
-		} else {
-			elements = (T[]) new Object[capacity];
-		}
+		elements = (T[]) new Object[c.size()];
+		addAll(c);
 	}
 
 	/**
@@ -193,14 +175,10 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		private int nextCount = 0;
 
-		//@formatter:off
 		@Override
 		public boolean hasNext() {
-			return 	capacity == 0	 ? false 		  :
-					size == capacity ? nextCount == 0 :
-					p != tail;
+			return size == 0 ? false : p == tail ? nextCount == 0 : true;
 		}
-		//@formatter:on
 
 		@Override
 		public T next() {
@@ -210,7 +188,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			calledNext = true;
 			T o = elements[p++];
 			nextCount++;
-			if (p == capacity) {
+			if (p == capacity && tail != capacity) {
 				p = 0;
 			}
 			return o;
@@ -221,7 +199,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			if (!calledNext) {
 				throw new IllegalStateException();
 			}
-			int prev = p - 1;
+			int prev = p - 1 < 0 ? capacity - 1 : p - 1;
 			if (head <= tail) {
 				System.arraycopy(elements, p, elements, prev, tail - prev);
 			} else {
@@ -229,14 +207,8 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 				elements[capacity - 1] = elements[0];
 				System.arraycopy(elements, 1, elements, 0, tail);
 			}
-			tail--;
-			p--;
-			if (tail < 0) {
-				tail = capacity - 1;
-			}
-			if (p < 0) {
-				p = capacity - 1;
-			}
+			tail = tail - 1 < 0 ? capacity - 1 : tail - 1;
+			p = p - 1 < 0 ? capacity - 1 : p - 1;
 			size--;
 			calledNext = false;
 		}
