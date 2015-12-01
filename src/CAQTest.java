@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,12 +21,12 @@ import org.junit.Test;
 
 public class CAQTest {
 	CircularArrayQueue<Integer> queue;
-	ArrayList<Integer> test;
+	Queue<Integer> test;
 
 	@Before
 	public void setup() {
 		queue = new CircularArrayQueue<Integer>();
-		test = new ArrayList<Integer>();
+		test = new LinkedList<Integer>();
 	}
 
 	@Test
@@ -130,7 +131,6 @@ public class CAQTest {
 
 			assertEquals(i.hasNext(), it.hasNext());
 			assertEquals(test.size(), queue.size());
-			assertTrue(Arrays.equals(test.toArray(), queue.toArray()));
 		}
 
 	}
@@ -150,7 +150,7 @@ public class CAQTest {
 				size++;
 			} else {
 				queue.remove();
-				test.remove(0);
+				test.remove();
 				size--;
 			}
 		}
@@ -174,8 +174,92 @@ public class CAQTest {
 			assertEquals(size, queue.size());
 		}
 
-		assertTrue(test.containsAll(queue));
 		assertTrue(queue.containsAll(test));
+	}
+
+	@Test
+	public void addRemoveToLimit() {
+		int sz = queue.capacity();
+		for (int i = 0; i < sz; i++) {
+			test.add(i);
+			queue.add(i);
+		}
+		assertEquals(test.size(), queue.size());
+
+		Iterator<Integer> iter = queue.iterator();
+		for (int i = 0; i < sz; i++) {
+			assertTrue(iter.hasNext());
+			iter.next();
+		}
+		assertFalse(iter.hasNext());
+
+		for (int i = 0; i < sz; i++) {
+			test.remove();
+			queue.remove();
+		}
+
+		assertEquals(test.size(), queue.size());
+		Iterator<Integer> it = queue.iterator();
+		assertFalse(it.hasNext());
+
+		queue.add(1);
+		it = queue.iterator();
+		assertTrue(it.hasNext());
+		it.next();
+		assertFalse(it.hasNext());
+
+		assertEquals(sz, queue.capacity());
+	}
+
+	@Test
+	public void addAllThenUse() {
+		List<Integer> toAdd = new ArrayList<>();
+		for (int i = 0; i < 1000; i++) {
+			toAdd.add(i);
+		}
+
+		queue.addAll(toAdd);
+		assertTrue(queue.capacity() >= toAdd.size());
+
+		for (int i = 1000; i < 1100; i++) {
+			queue.add(i);
+		}
+
+		assertTrue(queue.containsAll(toAdd));
+		for (int i = 1000; i < 1100; i++) {
+			assertTrue(queue.contains(i));
+		}
+
+		int sz = queue.size();
+		for (int i = 0; i < sz; i++) {
+			queue.remove();
+		}
+		assertTrue(queue.isEmpty());
+	}
+
+	@Test
+	public void testOrdering() {
+		for (int i = 0; i < 100; i++) {
+			test.add(i);
+			queue.add(i);
+		}
+
+		int sz = test.size();
+		for (int i = 0; i < sz; i++) {
+			assertEquals(test.remove(), queue.remove());
+		}
+	}
+
+	@Test(expected = ConcurrentModificationException.class)
+	public void testConcurrentModification() {
+		for (int i = 0; i < 50; i++) {
+			queue.add(i);
+		}
+
+		Iterator<Integer> i = queue.iterator();
+		assertTrue(i.hasNext());
+		queue.remove();
+		i.next();
 	}
 
 	@Test
@@ -430,7 +514,7 @@ public class CAQTest {
 	@Test
 	public void testIterator() {
 		CircularArrayQueue<String> queue = new CircularArrayQueue<>();
-		ArrayList<String> test = new ArrayList<>();
+		Queue<String> test = new LinkedList<>();
 
 		Random rand = new Random();
 
@@ -446,7 +530,7 @@ public class CAQTest {
 				test.add(nextString);
 				queue.add(nextString);
 			} else {
-				test.remove(0);
+				test.remove();
 				queue.remove();
 			}
 		}
@@ -472,8 +556,7 @@ public class CAQTest {
 
 		assertTrue(Arrays.equals(arr1, arr2));
 
-		queue = new CircularArrayQueue<>();
-		test = new ArrayList<>();
+		setup();
 
 		for (int i = 0; i < 1000; i++) {
 			queue.add(i);
@@ -512,7 +595,7 @@ public class CAQTest {
 				queue.add(nextInt);
 				size++;
 			} else {
-				test.remove(0);
+				test.remove();
 				queue.remove();
 				size--;
 			}
@@ -528,8 +611,7 @@ public class CAQTest {
 
 		assertTrue(Arrays.equals(arr1, arr2));
 
-		queue = new CircularArrayQueue<>();
-		test = new ArrayList<>();
+		setup();
 
 		for (int i = 0; i < 1500; i++) {
 			queue.add(i);
@@ -597,7 +679,7 @@ public class CAQTest {
 
 		for (int i = 0; i < 800; i++) {
 			queue.remove();
-			test.remove(0);
+			test.remove();
 		}
 
 		for (int i = 0; i < 600; i++) {
@@ -637,7 +719,7 @@ public class CAQTest {
 				test.add(nextInt);
 				queue.add(nextInt);
 			} else {
-				test.remove(0);
+				test.remove();
 				queue.remove();
 			}
 		}
@@ -697,7 +779,6 @@ public class CAQTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testConstructorIllegal() {
-		test = new ArrayList<>();
 		for (int i = 0; i < 100; i++) {
 			test.add(i);
 		}
@@ -746,7 +827,7 @@ public class CAQTest {
 				test.add(i);
 			} else {
 
-				test.remove(0);
+				test.remove();
 				queue.remove();
 			}
 
@@ -754,8 +835,7 @@ public class CAQTest {
 			assertTrue(Arrays.equals(queue.toArray(new Object[0]), test.toArray(new Object[0])));
 		}
 
-		queue = new CircularArrayQueue<>();
-		test = new ArrayList<>();
+		setup();
 
 		int size = 0;
 		for (int i = 0; i < 100000; i++) {
@@ -782,7 +862,7 @@ public class CAQTest {
 				assertEquals(it.hasNext(), iter.hasNext());
 			} else {
 				queue.remove();
-				test.remove(0);
+				test.remove();
 				it = test.iterator();
 				iter = queue.iterator();
 				size--;
@@ -803,7 +883,7 @@ public class CAQTest {
 			}
 		}
 		for (int i = 0; i < 250; i++) {
-			test.remove(0);
+			test.remove();
 			queue.remove();
 		}
 
@@ -814,8 +894,7 @@ public class CAQTest {
 		Object[] b = queue.toArray();
 		assertTrue(Arrays.equals(a, b));
 
-		queue = new CircularArrayQueue<>();
-		test = new ArrayList<>();
+		setup();
 
 		for (int i = 0; i < 500; i++) {
 			queue.add(i);
@@ -824,7 +903,7 @@ public class CAQTest {
 
 		for (int i = 0; i < 500; i++) {
 			queue.remove();
-			test.remove(0);
+			test.remove();
 		}
 
 		for (int i = 0; i < 250; i++) {
@@ -868,7 +947,7 @@ public class CAQTest {
 				queue.add(i);
 				size++;
 			} else {
-				test.remove(0);
+				test.remove();
 				queue.remove();
 				size--;
 			}
@@ -932,13 +1011,14 @@ public class CAQTest {
 		testElementsEqual();
 
 		queue = new CircularArrayQueue<>(c);
-		test = new ArrayList<>(c);
+		test = new LinkedList<>(c);
+
 		testElementsEqual();
 		addRandomInts();
 		testElementsEqual();
 
 		queue = new CircularArrayQueue<>(100);
-		test = new ArrayList<>(100);
+		test = new LinkedList<>();
 
 		addRandomInts();
 		testElementsEqual();
