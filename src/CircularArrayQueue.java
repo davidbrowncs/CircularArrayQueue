@@ -13,9 +13,10 @@ import java.util.Queue;
  * License, Version 1.3 or any later version published by the Free Software
  * Foundation; with no Invariant Sections, no Front-Cover Texts, and no
  * Back-Cover Texts. A copy of the license is included in the section entitled
- * "GNU Free Documentation License". Resizable circular array queue
- * implementation of the {@code List} interface. Implements all optional
- * methods.
+ * "GNU Free Documentation License".
+ *
+ * Resizable circular array queue implementation of the {@code List} interface.
+ * Implements all optional methods.
  *
  * Provides constant time access for {@code size}, {@code add} (although this is
  * amortized constant time), {@code remove} operations.
@@ -350,7 +351,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			throw new NullPointerException();
 		}
 		if (a.length < size) {
-			a = (E[]) new Object[size];
+			a = (E[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
 		}
 		if (size == 0) {
 			return a;

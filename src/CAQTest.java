@@ -59,6 +59,12 @@ public class CAQTest {
 		assertEquals(1, queue.size());
 	}
 
+	@Test(expected = ArrayStoreException.class)
+	public void testWrongToArrayType() {
+		queue.add(20);
+		queue.toArray(new String[0]);
+	}
+
 	@Test
 	public void testAddMultiple() {
 		for (int i = 0; i < 100; i++) {
