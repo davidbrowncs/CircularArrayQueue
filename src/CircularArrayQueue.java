@@ -162,7 +162,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#size()
 	 */
 	@Override
@@ -172,7 +172,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
@@ -196,7 +196,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
@@ -249,7 +249,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.util.Iterator#hasNext()
 		 */
 		@Override
@@ -259,7 +259,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.util.Iterator#next()
 		 */
 		@Override
@@ -281,7 +281,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Iterator#remove()
 		 */
 		@Override
@@ -310,7 +310,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
@@ -320,7 +320,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
@@ -340,7 +340,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
@@ -369,7 +369,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
@@ -400,7 +400,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
 	@Override
@@ -419,7 +419,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#addAll(java.util.Collection)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -428,7 +428,6 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		if (c == null) {
 			throw new NullPointerException();
 		}
-		mods++;
 		int cs = c.size();
 		if (capacity < size + cs) {
 			resize(ensureCapacity((cs << 1) + capacity));
@@ -440,13 +439,16 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			System.arraycopy(a, 0, elements, tail, capacity - tail);
 			System.arraycopy(a, capacity - tail, elements, capacity - tail, cs - (capacity - tail));
 		}
+		final int oldTail = tail;
 		size += cs;
-		int oldTail = tail;
 		tail += cs;
 		if (tail > capacity) {
 			tail = cs - (capacity - oldTail);
 		}
-		return true;
+		if (oldTail != tail) {
+			mods++;
+		}
+		return oldTail != tail;
 	}
 
 	/**
@@ -481,7 +483,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@Override
@@ -491,7 +493,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
@@ -520,7 +522,6 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		if (c == null) {
 			throw new NullPointerException();
 		}
-		mods++;
 		int h = head, cnt = 0, p = head;
 		for (; cnt < size; h++, cnt++) {
 			if (h == capacity) {
@@ -536,12 +537,15 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		boolean changed = tail != p;
 		size -= (p <= tail ? tail - p : capacity - p + tail);
 		tail = p;
+		if (changed) {
+			mods++;
+		}
 		return changed;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
@@ -555,7 +559,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
@@ -578,7 +582,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
@@ -588,7 +592,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
@@ -607,7 +611,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
@@ -617,7 +621,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#element()
 	 */
 	@Override
@@ -630,7 +634,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
@@ -640,7 +644,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -657,7 +661,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -693,7 +697,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see java.lang.Object#clone()
 	 */
 	@SuppressWarnings("unchecked")
