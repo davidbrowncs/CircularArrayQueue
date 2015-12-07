@@ -163,7 +163,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#size()
 	 */
 	@Override
@@ -173,7 +173,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#contains(java.lang.Object)
 	 */
 	@Override
@@ -197,7 +197,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#isEmpty()
 	 */
 	@Override
@@ -250,7 +250,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Iterator#hasNext()
 		 */
 		@Override
@@ -260,7 +260,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see java.util.Iterator#next()
 		 */
 		@Override
@@ -282,7 +282,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see java.util.Iterator#remove()
 		 */
 		@Override
@@ -301,6 +301,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 				elements[capacity - 1] = elements[0];
 				System.arraycopy(elements, 1, elements, 0, tail);
 			}
+			elements[tail] = null;
 			tail = tail - 1 < 0 ? capacity - 1 : tail - 1;
 			p = p - 1 < 0 ? capacity - 1 : p - 1;
 			size--;
@@ -311,7 +312,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#iterator()
 	 */
 	@Override
@@ -321,7 +322,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#toArray()
 	 */
 	@Override
@@ -341,7 +342,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#toArray(java.lang.Object[])
 	 */
 	@SuppressWarnings("unchecked")
@@ -370,7 +371,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#remove(java.lang.Object)
 	 */
 	@Override
@@ -401,7 +402,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#containsAll(java.util.Collection)
 	 */
 	@Override
@@ -420,7 +421,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#addAll(java.util.Collection)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -484,7 +485,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#removeAll(java.util.Collection)
 	 */
 	@Override
@@ -494,7 +495,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#retainAll(java.util.Collection)
 	 */
 	@Override
@@ -536,6 +537,15 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			}
 		}
 		boolean changed = tail != p;
+		if (tail - p > 0) {
+			for (int i = p; i < tail; i++) {
+				elements[i] = null;
+			}
+		} else if (p - tail > 0) {
+			for (int i = tail - 1; i >= p; i--) {
+				elements[i] = null;
+			}
+		}
 		size -= (p <= tail ? tail - p : capacity - p + tail);
 		tail = p;
 		if (changed) {
@@ -546,12 +556,20 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Collection#clear()
 	 */
 	@Override
 	public void clear() {
-		// We don't even need to null any elements!
+		if (head < tail) {
+			for (int i = head; i < tail; i++) {
+				elements[i] = null;
+			}
+		} else {
+			for (int i = tail - 1; i >= head; i--) {
+				elements[i] = null;
+			}
+		}
 		tail = 0;
 		head = 0;
 		size = 0;
@@ -560,7 +578,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#add(java.lang.Object)
 	 */
 	@Override
@@ -583,7 +601,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#offer(java.lang.Object)
 	 */
 	@Override
@@ -593,7 +611,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#remove()
 	 */
 	@Override
@@ -602,7 +620,8 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 			throw new NoSuchElementException();
 		}
 		mods++;
-		T o = elements[head++];
+		T o = elements[head];
+		elements[head++] = null;
 		if (head == capacity) {
 			head = 0;
 		}
@@ -612,7 +631,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#poll()
 	 */
 	@Override
@@ -622,7 +641,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#element()
 	 */
 	@Override
@@ -635,7 +654,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.util.Queue#peek()
 	 */
 	@Override
@@ -645,7 +664,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -662,7 +681,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@SuppressWarnings("rawtypes")
@@ -698,7 +717,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#clone()
 	 */
 	@SuppressWarnings("unchecked")

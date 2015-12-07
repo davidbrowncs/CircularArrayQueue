@@ -285,6 +285,15 @@ public class CAQTest {
 	}
 
 	@Test
+	public void testClear() {
+		queue.add(1);
+		queue.add(2);
+		queue.clear();
+		assertTrue(queue.isEmpty());
+		assertEquals(0, queue.size());
+	}
+
+	@Test
 	public void testPeek() {
 		assertEquals(null, queue.peek());
 	}
@@ -668,6 +677,37 @@ public class CAQTest {
 
 		assertTrue(test.containsAll(queue));
 		assertTrue(queue.containsAll(test));
+		assertEquals(test.size(), queue.size());
+	}
+
+	@Test
+	public void removeAllMakesEmpty() {
+		ArrayList<Integer> toRemove = new ArrayList<>();
+		for (int i = 0; i < 10; i++) {
+			queue.add(i);
+			test.add(i);
+			toRemove.add(i);
+		}
+		queue.removeAll(toRemove);
+		test.removeAll(toRemove);
+		assertEquals(test.size(), queue.size());
+
+		setup();
+		for (int i = 0; i < 10; i++) {
+			queue.add(i);
+			test.add(i);
+		}
+		for (int i = 0; i < 10; i++) {
+			queue.remove();
+			test.remove(0);
+		}
+		for (int i = 0; i < 10; i++) {
+			queue.add(i);
+			test.add(i);
+		}
+
+		queue.removeAll(toRemove);
+		test.removeAll(toRemove);
 		assertEquals(test.size(), queue.size());
 	}
 
