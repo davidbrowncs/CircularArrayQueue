@@ -445,7 +445,7 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 		size += cs;
 		tail += cs;
 		if (tail > capacity) {
-			tail = cs - (capacity - oldTail);
+			tail = cs - capacity + oldTail;
 		}
 		if (oldTail != tail) {
 			mods++;
@@ -542,7 +542,10 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 				elements[i] = null;
 			}
 		} else if (p - tail > 0) {
-			for (int i = tail - 1; i >= p; i--) {
+			for (int i = p; i < capacity; i++) {
+				elements[i] = null;
+			}
+			for (int i = 0; i < tail; i++) {
 				elements[i] = null;
 			}
 		}
@@ -566,7 +569,10 @@ public class CircularArrayQueue<T> implements Queue<T>, Serializable, Cloneable,
 				elements[i] = null;
 			}
 		} else {
-			for (int i = tail - 1; i >= head; i--) {
+			for (int i = head; i < capacity; i++) {
+				elements[i] = null;
+			}
+			for (int i = 0; i < tail; i++) {
 				elements[i] = null;
 			}
 		}
